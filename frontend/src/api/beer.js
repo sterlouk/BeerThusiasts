@@ -117,6 +117,17 @@ export const updateBeerAdmin = async (id, fields) => {
   return res.json();
 };
 
+export const deleteBeerAdmin = async (id) => {
+  const res = await fetch(`${API_BASE}/api/admin/beers/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `API error ${res.status}`);
+  }
+  return res.json();
+};
+
 export const upsertPubHasBeerAdmin = async (row) => {
   const res = await fetch(`${API_BASE}/api/admin/pubhasbeer`, {
     method: "POST",

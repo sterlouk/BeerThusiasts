@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001";
+
 export default function BeerCard({ beer }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
@@ -42,13 +44,27 @@ export default function BeerCard({ beer }) {
     }}
     className="beer-card-container"
     >
-      {/* Beer Image/Icon */}
-      <div style={{
-        textAlign: "center",
-        marginBottom: "15px",
-        fontSize: "3rem"
-      }}>
-        🍺
+      {/* Beer Image */}
+      <div style={{ textAlign: "center", marginBottom: "15px" }}>
+        <img
+          src={`${API_BASE}/images/beers/${beer.beer_id}.jpg`}
+          alt={beer.beer_name}
+          onError={(e) => {
+            // try png then fallback to emoji placeholder
+            if (!e.target.dataset.triedPng) {
+              e.target.dataset.triedPng = '1';
+              e.target.src = `${API_BASE}/images/beers/${beer.beer_id}.png`;
+              return;
+            }
+            e.target.style.display = 'none';
+            const parent = e.target.parentNode;
+            const placeholder = document.createElement('div');
+            placeholder.textContent = '🍺';
+            placeholder.style.fontSize = '3rem';
+            parent.appendChild(placeholder);
+          }}
+          style={{ maxWidth: '160px', maxHeight: '120px', objectFit: 'cover', borderRadius: '8px' }}
+        />
       </div>
 
       {/* Beer Info */}

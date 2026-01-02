@@ -322,3 +322,17 @@ export const deleteEmployee = async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 };
+
+// Handle uploaded beer image (multer stores the file already)
+export const uploadBeerImage = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    // The storage was configured to place the file under public/images/beers/<beerId>.<ext>
+    const filename = req.file.filename;
+    const url = `/images/beers/${filename}`; // served by express static in app.js
+    return res.json({ url, filename });
+  } catch (err) {
+    console.error('uploadBeerImage error', err);
+    return res.status(500).json({ error: 'Upload failed' });
+  }
+};

@@ -1,10 +1,26 @@
 import express from "express";
-import { createBeer, updateBeer, upsertPubHasBeer, getEnums, getEmployees, createEmployee, updateEmployee, deleteEmployee } from "../controllers/adminController.js";
+import multer from "multer";
+import path from "path";
+import { createBeer, updateBeer, upsertPubHasBeer, getEnums, getEmployees, createEmployee, updateEmployee, deleteEmployee, uploadBeerImage } from "../controllers/adminController.js";
 
 const router = express.Router();
 
+// multer storage that names files as <beerId>.<ext> into backend/public/images/beers
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, path.join(process.cwd(), 'public', 'images', 'beers'));
+	},
+	filename: (req, file, cb) => {
+		const beerId = req.params.id || req.body.beer_id || 'unknown';
+		const ext = path.extname(file.originalname) || '.jpg';
+		cb(null, `${beerId}${ext}`);
+	}
+});
+const upload = multer({ storage });
+
 router.post("/beers", createBeer);
 router.put("/beers/:id", updateBeer);
+router.post("/beers/:id/image", upload.single('image'), uploadBeerImage);
 router.post("/pubhasbeer", upsertPubHasBeer);
 router.get("/enums", getEnums);
 
