@@ -41,6 +41,20 @@ export default function Playroom() {
   const [towerFailed, setTowerFailed] = useState(0);
 
   useEffect(() => {
+    const loadBeers = async () => {
+      try {
+        const beerData = await fetchBeers();
+        setBeers(beerData);
+      } catch (error) {
+        console.error('Failed to load beers:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBeers();
+  }, []);
+
+  useEffect(() => {
     if (currentGame === "tower") {
       const canvas = document.getElementById('tower-canvas');
       if (canvas && !towerGame) {
