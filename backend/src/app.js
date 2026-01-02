@@ -7,6 +7,7 @@ import reviewsRoutes from "./routes/reviews.js";
 import ordersRoutes from "./routes/orders.js";
 import pubsRoutes from "./routes/pubs.js";
 import adminRoutes from "./routes/admin.js";
+import path from "path";
 
 dotenv.config();
 
@@ -21,6 +22,12 @@ app.use("/api/reviews", reviewsRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/pubs", pubsRoutes);
 app.use("/api/admin", adminRoutes);
+
+// Serve uploaded beer images from /images/beers
+app.use(
+  "/images/beers",
+  express.static(path.join(process.cwd(), "public", "images", "beers"))
+);
 
 // Use a single fixed development port to avoid accidental collisions with system env vars.
 // This is intentionally hardcoded for development; change if necessary.

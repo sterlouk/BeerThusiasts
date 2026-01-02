@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { fetchBeer, fetchReviews, postReview } from "../api/beer";
+import AddBeerForm from "../components/AddBeerForm";
+import UploadImageForm from "../components/UploadImageForm";
+
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5001';
 
 export default function BeerDetails() {
   const { id } = useParams();
+  const location = useLocation();
+  const isCreate = location.pathname.endsWith("/new");
   const [beer, setBeer] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [imgTs, setImgTs] = useState(Date.now());
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [customerId, setCustomerId] = useState("");
 
   useEffect(() => {
+    if (isCreate) return; // skip fetching when creating a new beer
     fetchBeer(id).then(setBeer).catch(console.error);
     fetchReviews(id).then(setReviews).catch(console.error);
-  }, [id]);
+  }, [id, isCreate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,6 +43,23 @@ export default function BeerDetails() {
   const averageRating = reviews.length > 0
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
     : 0;
+
+  if (isCreate) {
+    return (
+      <div style={{
+        maxWidth: "800px",
+        margin: "0 auto",
+        padding: "20px",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        minHeight: "100vh"
+      }}>
+        <div style={{ background: "rgba(255,255,255,0.95)", borderRadius: "15px", padding: "30px", boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}>
+          <h1 style={{ fontSize: "2rem", color: "#2c3e50", marginBottom: "10px" }}>➕ Create New Beer</h1>
+          <AddBeerForm />
+        </div>
+      </div>
+    );
+  }
 
   if (!beer) return (
     <div style={{
@@ -66,6 +91,15 @@ export default function BeerDetails() {
         boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
         textAlign: "center"
       }}>
+        {/* Image + Upload for admins */}
+        <div style={{ marginBottom: '18px' }}>
+          <img src={`${API_BASE}/images/beers/${beer.beer_id}.jpg?ts=${imgTs}`} alt={beer.beer_name} style={{ maxWidth: '180px', borderRadius: '8px', objectFit: 'cover' }} onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }} />
+          {localStorage.getItem('role') === 'admin' && (
+            <div style={{ marginTop: '10px' }}>
+              <UploadImageForm beerId={beer.beer_id} onUploaded={() => setImgTs(Date.now())} />
+            </div>
+          )}
+        </div>
         <h1 style={{
           fontSize: "2.5rem",
           color: "#2c3e50",
