@@ -188,3 +188,5 @@ export const deleteEmployeeAdmin = async (id) => {
   if (!res.ok) throw new Error(`API error ${res.status}`);
   return res.json();
 };
+
+export { API_BASE };

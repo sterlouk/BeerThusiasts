@@ -10,6 +10,7 @@ import Checkout from "./pages/Checkout";
 import Header from "./components/Header";
 import ServiceOrders from "./pages/ServiceOrders";
 import OrderDetails from "./pages/OrderDetails";
+import Playroom from "./pages/Playroom";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/beers" element={<AdminBeers />} />
         <Route path="/admin/beers/:id/edit" element={<AdminBeerEdit />} />
+        <Route path="/playroom" element={<Playroom />} />
       </Routes>
     </BrowserRouter>
   );

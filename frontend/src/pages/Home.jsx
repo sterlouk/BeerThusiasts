@@ -88,6 +88,32 @@ export default function Home() {
           </button>
 
           <button
+            onClick={() => navigate("/playroom")}
+            style={{
+              padding: "15px 30px",
+              fontSize: "1.1rem",
+              background: "linear-gradient(45deg, #f39c12, #e67e22)",
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer",
+              boxShadow: "0 4px 15px rgba(243, 156, 18, 0.3)",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              minWidth: "180px"
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 6px 20px rgba(243, 156, 18, 0.4)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 4px 15px rgba(243, 156, 18, 0.3)";
+            }}
+          >
+            🎮 Playroom
+          </button>
+
+          <button
             onClick={() => enterAs("admin")}
             style={{
               padding: "15px 30px",
