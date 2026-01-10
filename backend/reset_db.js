@@ -15,7 +15,35 @@ async function resetDatabase() {
   });
 
   try {
-    // First load the schema from dbDump.sql
+    // First, drop all views to avoid "already exists" errors
+    try {
+      await connection.query("SET FOREIGN_KEY_CHECKS = 0");
+      const viewNames = [
+        'beerswithbrandinfo',
+        'beerwithbrand',
+        'customersafter2022',
+        'employeeshighsalarygreece',
+        'greekemployeeshighsalary',
+        'positivebeerreviews',
+        'positivereviewswithbeerbrand',
+        'pubsneedrestock',
+        'pubstorestock',
+        'recentcustomers'
+      ];
+
+      for (const viewName of viewNames) {
+        try {
+          await connection.query(`DROP VIEW IF EXISTS ${viewName}`);
+        } catch (err) {
+          // Silently ignore if view doesn't exist
+        }
+      }
+      await connection.query("SET FOREIGN_KEY_CHECKS = 1");
+    } catch (err) {
+      // Continue even if view dropping fails
+    }
+
+    // Then load the schema from dbDump.sql
     const statements = sqlContent
       .split(';')
       .map(stmt => stmt.trim())
@@ -25,8 +53,14 @@ async function resetDatabase() {
       try {
         await connection.query(statement);
       } catch (err) {
-        // Ignore certain errors like dropping non-existent views
-        if (!err.message.includes('unknown table') && !err.message.includes('1051')) {
+        // Ignore harmless errors
+        const isHarmless = 
+          err.message.includes('already exists') ||
+          err.message.includes('can\'t set to the value') ||
+          err.message.includes('Variable') ||
+          err.message.includes('character_set');
+        
+        if (!isHarmless) {
           console.log(`Executing: ${statement.substring(0, 50)}...`);
           console.error(`Error: ${err.message}`);
         }

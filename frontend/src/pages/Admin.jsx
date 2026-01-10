@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { upsertPubHasBeerAdmin, fetchPubsNeedsRestock, fetchBeers } from "../api/beer";
 import PlaceOrder from "./PlaceOrder";
+import AdminSupplierOrders from "./AdminSupplierOrders";
 import Employees from "./Employees";
 
 // Restock Alert Component
@@ -211,7 +212,12 @@ export default function Admin() {
         <Employees />
       </div>
     );
-
+    if (active === 'supplier-orders') return (
+      <div style={{ background: "rgba(255,255,255,0.95)", borderRadius: "15px", padding: "30px", boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}>
+        <button onClick={() => setActive('menu')} style={{ padding: "8px 15px", background: "#95a5a6", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", marginBottom: "20px" }}>← Back to Menu</button>
+        <AdminSupplierOrders />
+      </div>
+    );
     return (
       <div style={{ background: "rgba(255, 255, 255, 0.95)", borderRadius: "15px", padding: "40px", boxShadow: "0 8px 25px rgba(0,0,0,0.1)", textAlign: "center" }}>
         <h1 style={{ color: "#2c3e50", marginBottom: "10px", fontSize: "2.5rem" }}>⚙️ Admin Panel</h1>
@@ -223,6 +229,7 @@ export default function Admin() {
           <button onClick={() => setActive('restock')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #e67e22, #d35400)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>🔄 Check Restock</button>
           <button onClick={() => setActive('employees')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #9b59b6, #8e44ad)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>👥 Company Records</button>
           <button onClick={() => setActive('orders')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #34495e, #2c3e50)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>📦 Place Order</button>
+          <button onClick={() => setActive('supplier-orders')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #16a085, #1abc9c)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>📋 Supplier Orders</button>
         </div>
       </div>
     );

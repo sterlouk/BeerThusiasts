@@ -213,4 +213,20 @@ export const placeSupplierOrder = async (orderData) => {
   return res.json();
 };
 
+export const fetchSupplierOrders = async () => {
+  const res = await fetch(`${API_BASE}/api/admin/supplier-orders`);
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+};
+
+export const updateSupplierOrder = async (orderId, updates) => {
+  const res = await fetch(`${API_BASE}/api/admin/supplier-orders/${orderId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+};
+
 export { API_BASE };

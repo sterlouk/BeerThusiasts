@@ -442,3 +442,68 @@ export const placeSupplierOrder = async (req, res) => {
     conn.release();
   }
 };
+
+export const getSupplierOrders = async (req, res) => {
+  const conn = await pool.getConnection();
+  try {
+    const [orders] = await conn.query(
+      `SELECT so.*, s.name as supplier_name, p.name as pub_name, p.pub_id
+       FROM supplierorder so
+       LEFT JOIN supplier s ON so.supplier_id = s.supplier_id
+       LEFT JOIN pub p ON so.pub_id = p.pub_id
+       ORDER BY so.supplier_order_id DESC`
+    );
+    res.json(orders || []);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
+  } finally {
+    conn.release();
+  }
+};
+
+export const updateSupplierOrderStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status, reason_pending, expected_delivery_date } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "id is required" });
+  }
+
+  const conn = await pool.getConnection();
+  try {
+    const updates = [];
+    const params = [];
+
+    if (status !== undefined) {
+      updates.push(`status = ?`);
+      params.push(status);
+    }
+
+    if (reason_pending !== undefined) {
+      updates.push(`reason_pending = ?`);
+      params.push(reason_pending || null);
+    }
+
+    if (expected_delivery_date !== undefined) {
+      updates.push(`expected_delivery_date = ?`);
+      params.push(expected_delivery_date || null);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: "At least one field to update is required" });
+    }
+
+    let query = `UPDATE supplierorder SET ${updates.join(", ")} WHERE supplier_order_id = ?`;
+    params.push(id);
+
+    await conn.query(query, params);
+
+    res.json({ message: "Order updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
+  } finally {
+    conn.release();
+  }
+};
