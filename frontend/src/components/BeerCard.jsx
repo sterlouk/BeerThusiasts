@@ -82,7 +82,7 @@ export default function BeerCard({ beer }) {
           fontSize: "0.9rem",
           marginBottom: "5px"
         }}>
-          <span style={{ fontWeight: "bold" }}>Type:</span> {beer.kind || "N/A"}
+          <span style={{ fontWeight: "bold" }}>Type:</span> {beer.beer_kind || "N/A"}
         </div>
         <div style={{
           color: "#7f8c8d",
@@ -95,7 +95,7 @@ export default function BeerCard({ beer }) {
           color: "#7f8c8d",
           fontSize: "0.9rem"
         }}>
-          <span style={{ fontWeight: "bold" }}>Country:</span> {beer.country || "N/A"}
+          <span style={{ fontWeight: "bold" }}>Country:</span> {beer.country_of_origin || "N/A"}
         </div>
       </div>
 

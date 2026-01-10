@@ -87,9 +87,11 @@ export default function Filters({ onChange }) {
           onBlur={(e) => e.target.style.borderColor = "#ecf0f1"}
         >
           <option value="">🌍 All countries</option>
-          <option value="Greece">Greece</option>
-          <option value="Ireland">Ireland</option>
-          <option value="USA">USA</option>
+          {[...new Set(brands.map(b => b.country).filter(Boolean))].sort().map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
         </select>
 
         <select

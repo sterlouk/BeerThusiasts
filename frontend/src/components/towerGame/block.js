@@ -2,6 +2,7 @@ import {
   getMoveDownValue,
   getLandBlockVelocity,
   getSwingBlockVelocity,
+  // eslint-disable-next-line no-unused-vars
   touchEventHandler,
   addSuccessCount,
   addFailedCount,

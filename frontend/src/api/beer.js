@@ -155,8 +155,11 @@ export const fetchEnums = async () => {
 };
 
 // Employee API helpers
-export const fetchEmployees = async () => {
-  const res = await fetch(`${API_BASE}/api/admin/employees`);
+export const fetchEmployees = async (pubId = null) => {
+  const url = pubId
+    ? `${API_BASE}/api/admin/employees?pub_id=${encodeURIComponent(pubId)}`
+    : `${API_BASE}/api/admin/employees`;
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`API error ${res.status}`);
   return res.json();
 };
@@ -184,6 +187,23 @@ export const updateEmployeeAdmin = async (id, employee) => {
 export const deleteEmployeeAdmin = async (id) => {
   const res = await fetch(`${API_BASE}/api/admin/employees/${encodeURIComponent(id)}`, {
     method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+};
+
+// Supplier ordering functions
+export const fetchSuppliersForBrand = async (brandId) => {
+  const res = await fetch(`${API_BASE}/api/admin/suppliers/brand/${encodeURIComponent(brandId)}`);
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+};
+
+export const placeSupplierOrder = async (orderData) => {
+  const res = await fetch(`${API_BASE}/api/admin/supplier-orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderData),
   });
   if (!res.ok) throw new Error(`API error ${res.status}`);
   return res.json();
