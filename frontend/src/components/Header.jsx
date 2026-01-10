@@ -6,12 +6,12 @@ export default function Header() {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      padding: "15px 20px",
+      padding: "10px 20px",
       background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
       color: "white",
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
     }}>
-      <div>
+      <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
         <Link to="/" style={{
           textDecoration: "none",
           color: "white",

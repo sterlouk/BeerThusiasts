@@ -31,13 +31,14 @@ export default function Home() {
         maxWidth: "600px",
         width: "100%"
       }}>
+        <img src="/logo_home.png" alt="BeerThusiasts Logo" style={{ height: "270px", width: "auto", marginBottom: "0px" }} />
         <h1 style={{
           fontSize: "3rem",
           color: "#2c3e50",
           marginBottom: "10px",
           textShadow: "2px 2px 4px rgba(0,0,0,0.1)"
         }}>
-          🍺 BeerThusiasts
+          BeerThusiasts
         </h1>
         <p style={{
           fontSize: "1.2rem",
