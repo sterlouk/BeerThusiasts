@@ -8,6 +8,7 @@ export default function PlaceOrder() {
   const [pubs, setPubs] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [failedImages, setFailedImages] = useState(new Set());
 
   useEffect(() => {
     const loadData = async () => {
@@ -16,7 +17,9 @@ export default function PlaceOrder() {
           fetchBeers(),
           fetchPubs()
         ]);
-        setBeers(beerData || []);
+        // Sort beers by ID in ascending order
+        const sortedBeers = (beerData || []).sort((a, b) => a.beer_id - b.beer_id);
+        setBeers(sortedBeers);
         setPubs(pubData || []);
       } catch (err) {
         console.error('Failed to load data', err);
@@ -58,6 +61,7 @@ export default function PlaceOrder() {
       }
 
       const orderData = {
+        pub_id: parseInt(form.pub_id),
         supplier_id: selectedSupplier.supplier_id,
         beer_id: selectedBeer.beer_id,
         quantity: parseInt(form.quantity),
@@ -106,23 +110,21 @@ export default function PlaceOrder() {
                   }}
                   onMouseOver={(e) => {
                     if (form.pub_id !== pub.pub_id) {
-                      e.target.style.transform = "translateY(-2px)";
-                      e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
                     }
                   }}
                   onMouseOut={(e) => {
                     if (form.pub_id !== pub.pub_id) {
-                      e.target.style.transform = "translateY(0)";
-                      e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                     }
                   }}
                 >
-                  <div style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: "5px" }}>{pub.name}</div>
-                  <div style={{ color: "#7f8c8d", fontSize: "0.9rem" }}>
-                    Location: {pub.city}, {pub.country}
-                  </div>
-                  <div style={{ color: "#7f8c8d", fontSize: "0.9rem" }}>
-                    Address: {pub.address}
+                  <div style={{ fontWeight: "bold", fontSize: "1.2rem", marginBottom: "10px", color: "#2c3e50" }}>{pub.name} (id {pub.pub_id})</div>
+                  <div style={{ color: "#555", fontSize: "0.95rem", lineHeight: "1.6" }}>
+                    <div>📍 {pub.city}, {pub.country}</div>
+                    <div>🏠 {pub.street || pub.address || "N/A"}</div>
                   </div>
                 </div>
               ))}
@@ -148,30 +150,57 @@ export default function PlaceOrder() {
                     cursor: "pointer",
                     background: form.beer_id === beer.beer_id ? "#e8f4fd" : "white",
                     transition: "all 0.2s ease",
-                    boxShadow: form.beer_id === beer.beer_id ? "0 2px 8px rgba(52, 152, 219, 0.2)" : "0 1px 3px rgba(0,0,0,0.1)"
+                    boxShadow: form.beer_id === beer.beer_id ? "0 2px 8px rgba(52, 152, 219, 0.2)" : "0 1px 3px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center"
                   }}
                   onMouseOver={(e) => {
                     if (form.beer_id !== beer.beer_id) {
-                      e.target.style.transform = "translateY(-2px)";
-                      e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
                     }
                   }}
                   onMouseOut={(e) => {
                     if (form.beer_id !== beer.beer_id) {
-                      e.target.style.transform = "translateY(0)";
-                      e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                     }
                   }}
                 >
-                  <div style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: "5px" }}>{beer.name}</div>
-                  <div style={{ color: "#7f8c8d", fontSize: "0.9rem" }}>
-                    Brand: {beer.brand_name || "Unknown"}
+                  <div
+                    style={{
+                      width: "80px",
+                      height: "120px",
+                      marginBottom: "10px",
+                      fontSize: "50px",
+                      lineHeight: "120px",
+                      textAlign: "center"
+                    }}
+                  >
+                    {failedImages.has(beer.beer_id) ? (
+                      <span>🍺</span>
+                    ) : (
+                      <img 
+                        src={`http://localhost:5001/images/beers/${beer.beer_id}.jpg`} 
+                        alt={beer.name}
+                        style={{
+                          width: "80px",
+                          height: "120px",
+                          objectFit: "contain"
+                        }}
+                        onError={() => {
+                          setFailedImages(prev => new Set(prev).add(beer.beer_id));
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: "5px", color: "#2c3e50" }}>
+                    {beer.name || beer.beer_name}
                   </div>
                   <div style={{ color: "#7f8c8d", fontSize: "0.9rem" }}>
-                    Type: {beer.beer_kind || "Unknown"}
-                  </div>
-                  <div style={{ color: "#27ae60", fontWeight: "bold", marginTop: "5px" }}>
-                    ${beer.price}
+                    ID: {beer.beer_id}
                   </div>
                 </div>
               ))}
@@ -207,34 +236,28 @@ export default function PlaceOrder() {
                     }}
                     onMouseOver={(e) => {
                       if (form.supplier_id !== supplier.supplier_id) {
-                        e.target.style.transform = "translateY(-2px)";
-                        e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                        e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
                       }
                     }}
                     onMouseOut={(e) => {
                       if (form.supplier_id !== supplier.supplier_id) {
-                        e.target.style.transform = "translateY(0)";
-                        e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                       }
                     }}
                   >
-                    <div style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: "5px" }}>
+                    <div style={{ fontWeight: "bold", fontSize: "1.2rem", marginBottom: "10px", color: "#2c3e50" }}>
                       {supplier.name}
                     </div>
-                    <div style={{ color: "#7f8c8d", fontSize: "0.9rem", marginBottom: "3px" }}>
-                      Contact: {supplier.contact_person}
-                    </div>
-                    <div style={{ color: "#7f8c8d", fontSize: "0.9rem", marginBottom: "3px" }}>
-                      Email: {supplier.email}
-                    </div>
-                    <div style={{ color: "#7f8c8d", fontSize: "0.9rem", marginBottom: "3px" }}>
-                      Phone: {supplier.phone}
-                    </div>
-                    <div style={{ color: "#7f8c8d", fontSize: "0.9rem", marginBottom: "8px" }}>
-                      Location: {supplier.city}, {supplier.country}
-                    </div>
-                    <div style={{ color: "#e74c3c", fontWeight: "bold", fontSize: "1.1rem" }}>
-                      Supply Price: ${supplier.supply_price}
+                    <div style={{ color: "#555", fontSize: "0.95rem", lineHeight: "1.6" }}>
+                      <div>👤 {supplier.contact_person}</div>
+                      <div>📧 {supplier.email}</div>
+                      <div>📞 {supplier.phone}</div>
+                      <div>📍 {supplier.city}, {supplier.country}</div>
+                      <div style={{ color: "#27ae60", fontWeight: "bold", marginTop: "8px", fontSize: "1rem" }}>
+                        💰 ${supplier.supply_price}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -275,8 +298,8 @@ export default function PlaceOrder() {
 
               <div style={{ flex: "1", minWidth: "200px", background: "#ecf0f1", padding: "15px", borderRadius: "8px" }}>
                 <div style={{ fontWeight: "bold", marginBottom: "10px" }}>Order Summary:</div>
-                <div style={{ marginBottom: "5px" }}>Pub: {selectedPub?.name}</div>
-                <div style={{ marginBottom: "5px" }}>Beer: {selectedBeer?.name}</div>
+                <div style={{ marginBottom: "5px" }}>Pub: {selectedPub?.name} (id {selectedPub?.pub_id})</div>
+                <div style={{ marginBottom: "5px" }}>Beer: {selectedBeer?.name} (id {selectedBeer?.beer_id})</div>
                 <div style={{ marginBottom: "5px" }}>Supplier: {selectedSupplier?.name}</div>
                 <div style={{ marginBottom: "5px" }}>Unit Price: ${selectedSupplier?.supply_price}</div>
                 <div style={{ marginBottom: "5px" }}>Quantity: {form.quantity}</div>

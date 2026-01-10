@@ -28,7 +28,7 @@ DROP TABLE IF EXISTS `beer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `beer` (
-  `beer_id` int NOT NULL,
+  `beer_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `country_of_origin` varchar(45) DEFAULT NULL,
   `alcohol_content` decimal(4,2) DEFAULT NULL,
@@ -95,7 +95,7 @@ DROP TABLE IF EXISTS `brand`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `brand` (
-  `brand_id` int NOT NULL,
+  `brand_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `country_of_origin` varchar(45) DEFAULT NULL,
   `website` varchar(45) DEFAULT NULL,
@@ -149,7 +149,7 @@ DROP TABLE IF EXISTS `customer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customer` (
-  `customer_id` int NOT NULL,
+  `customer_id` int NOT NULL AUTO_INCREMENT,
   `registration_date` date DEFAULT NULL,
   `loyalty_points` int DEFAULT '0',
   `email` varchar(50) DEFAULT NULL,
@@ -225,7 +225,7 @@ DROP TABLE IF EXISTS `employee`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `employee` (
-  `employee_id` int NOT NULL,
+  `employee_id` int NOT NULL AUTO_INCREMENT,
   `hire_date` date DEFAULT NULL,
   `salary` decimal(6,2) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
@@ -320,7 +320,7 @@ DROP TABLE IF EXISTS `orders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `orders` (
-  `order_id` int NOT NULL,
+  `order_id` int NOT NULL AUTO_INCREMENT,
   `status` enum('completed','pending','cancelled') DEFAULT NULL,
   `customer_id` int DEFAULT NULL,
   `pub_id` int DEFAULT NULL,
@@ -385,7 +385,7 @@ DROP TABLE IF EXISTS `pub`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pub` (
-  `pub_id` int NOT NULL,
+  `pub_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `manager_name` varchar(45) DEFAULT NULL,
   `phone` varchar(15) DEFAULT NULL,
@@ -489,7 +489,7 @@ DROP TABLE IF EXISTS `supplier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `supplier` (
-  `supplier_id` int NOT NULL,
+  `supplier_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `contact_person` varchar(45) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
@@ -521,7 +521,7 @@ DROP TABLE IF EXISTS `supplierorder`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `supplierorder` (
-  `supplier_order_id` int NOT NULL,
+  `supplier_order_id` int NOT NULL AUTO_INCREMENT,
   `order_date` date DEFAULT NULL,
   `status` enum('completed','pending','cancelled') DEFAULT NULL,
   `total_cost` decimal(10,2) DEFAULT NULL,
