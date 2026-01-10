@@ -1,0 +1,84 @@
+import fs from 'fs';
+import path from 'path';
+import mysql from 'mysql2/promise';
+
+async function resetDatabase() {
+  const sqlDumpPath = path.join(process.cwd(), '..', 'dbDump.sql');
+  const dummyDataPath = path.join(process.cwd(), 'dummy_data.sql');
+  const sqlContent = fs.readFileSync(sqlDumpPath, 'utf-8');
+  const dummyContent = fs.readFileSync(dummyDataPath, 'utf-8');
+
+  const connection = await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'ster', // Update if you have a password
+  });
+
+  try {
+    // First load the schema from dbDump.sql
+    const statements = sqlContent
+      .split(';')
+      .map(stmt => stmt.trim())
+      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+
+    for (const statement of statements) {
+      try {
+        await connection.query(statement);
+      } catch (err) {
+        // Ignore certain errors like dropping non-existent views
+        if (!err.message.includes('unknown table') && !err.message.includes('1051')) {
+          console.log(`Executing: ${statement.substring(0, 50)}...`);
+          console.error(`Error: ${err.message}`);
+        }
+      }
+    }
+
+    // TRUNCATE all data tables to clear the data from dbDump.sql before loading dummy data
+    try {
+      await connection.query("SET FOREIGN_KEY_CHECKS = 0");
+      await connection.query("TRUNCATE TABLE orderhasbeer");
+      await connection.query("TRUNCATE TABLE orders");
+      await connection.query("TRUNCATE TABLE customerreviewsbeer");
+      await connection.query("TRUNCATE TABLE customer");
+      await connection.query("TRUNCATE TABLE pubhasbeer");
+      await connection.query("TRUNCATE TABLE brandsuppliedbysupplier");
+      await connection.query("TRUNCATE TABLE supplier");
+      await connection.query("TRUNCATE TABLE beer");
+      await connection.query("TRUNCATE TABLE brand");
+      await connection.query("TRUNCATE TABLE supplierorder");
+      await connection.query("SET FOREIGN_KEY_CHECKS = 1");
+      console.log("Cleared all data tables");
+    } catch (err) {
+      console.error("Error truncating tables:", err.message);
+    }
+
+    // Then load the dummy data
+    const dummyStatements = dummyContent
+      .split(';')
+      .map(stmt => stmt.trim())
+      // Remove comments from the beginning of statements  
+      .map(stmt => stmt.replace(/^--[^\n]*\n/, '').trim())
+      .filter(stmt => stmt.length > 0);
+
+    for (const statement of dummyStatements) {
+      try {
+        if (statement.length > 0) {
+          await connection.query(statement);
+        }
+      } catch (err) {
+        if (statement.includes('INSERT INTO')) {
+          console.log(`FAILED INSERT: ${statement.substring(0, 100)}...`);
+          console.error(`Error: ${err.message}`);
+        }
+      }
+    }
+
+    console.log('✅ Database reset successfully with schema and dummy data!');
+  } catch (error) {
+    console.error('❌ Error resetting database:', error.message);
+  } finally {
+    await connection.end();
+  }
+}
+
+resetDatabase();

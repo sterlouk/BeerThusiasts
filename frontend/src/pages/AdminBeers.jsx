@@ -11,7 +11,9 @@ export default function AdminBeers() {
     const loadBeers = async () => {
       try {
         const data = await fetchBeers();
-        setBeers(data);
+        // Sort beers by ID in ascending order
+        const sortedBeers = data.sort((a, b) => a.beer_id - b.beer_id);
+        setBeers(sortedBeers);
       } catch (err) {
         console.error(err);
         alert("Failed to load beers");

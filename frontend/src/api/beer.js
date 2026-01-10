@@ -61,17 +61,21 @@ export const postOrder = async (order) => {
   return res.json();
 };
 
-export const fetchOrders = async () => {
-  const res = await fetch(`${API_BASE}/api/orders`);
+export const fetchOrders = async (filters = {}) => {
+  const params = new URLSearchParams();
+  if (filters.pub_id) params.append('pub_id', filters.pub_id);
+  if (filters.status) params.append('status', filters.status);
+  const url = `${API_BASE}/api/orders${params.toString() ? '?' + params.toString() : ''}`;
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`API error ${res.status}`);
   return res.json();
 };
 
-export const patchOrderStatus = async (orderId, status) => {
+export const patchOrderStatus = async (orderId, status, pub_id) => {
   const res = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(orderId)}/status`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, pub_id }),
   });
   if (!res.ok) {
     const text = await res.text();

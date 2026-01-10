@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchOrders, patchOrderStatus } from "../api/beer";
+import { fetchOrders, fetchPubs, patchOrderStatus } from "../api/beer";
 
 const StatusBadge = ({ status }) => {
   const getStatusStyle = (status) => {
@@ -32,29 +32,36 @@ const StatusBadge = ({ status }) => {
 
 export default function ServiceOrders() {
   const [orders, setOrders] = useState([]);
+  const [pubs, setPubs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPub, setSelectedPub] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const navigate = useNavigate();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchOrders();
-      setOrders(data);
+      const [ordersData, pubsData] = await Promise.all([
+        fetchOrders({ pub_id: selectedPub || undefined, status: selectedStatus || undefined }),
+        fetchPubs()
+      ]);
+      setOrders(ordersData);
+      setPubs(pubsData);
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to load orders: " + err.message);
+      alert("❌ Failed to load data: " + err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPub, selectedStatus]);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const changeStatus = async (orderId, status) => {
     try {
-      await patchOrderStatus(orderId, status);
+      await patchOrderStatus(orderId, status, 1); // Assuming pub_id = 1 for now
       setOrders((prev) => prev.map((o) => (o.order_id === orderId ? { ...o, status } : o)));
     } catch (err) {
       console.error(err);
@@ -98,6 +105,53 @@ export default function ServiceOrders() {
         }}>
           🚚 Service Orders Management
         </h1>
+
+        <div style={{
+          display: "flex",
+          gap: "20px",
+          marginBottom: "30px",
+          justifyContent: "center",
+          flexWrap: "wrap"
+        }}>
+          <div>
+            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Filter by Pub:</label>
+            <select
+              value={selectedPub}
+              onChange={(e) => setSelectedPub(e.target.value)}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+                fontSize: "1rem"
+              }}
+            >
+              <option value="">All Pubs</option>
+              {pubs.map((pub) => (
+                <option key={pub.pub_id} value={pub.pub_id}>
+                  {pub.name} (id {pub.pub_id})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Filter by Status:</label>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+                fontSize: "1rem"
+              }}
+            >
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
 
         {orders.length === 0 ? (
           <div style={{
