@@ -31,7 +31,7 @@ export default function Home() {
         maxWidth: "600px",
         width: "100%"
       }}>
-        <img src="/logo_home.png" alt="BeerThusiasts Logo" style={{ height: "270px", width: "auto", marginBottom: "0px" }} />
+        <img src="/logo_home.png" alt="BeerThusiasts Logo" style={{ height: "300px", width: "auto", marginBottom: "-20px" }} />
         <h1 style={{
           fontSize: "3rem",
           color: "#2c3e50",
