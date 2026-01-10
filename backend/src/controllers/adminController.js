@@ -375,10 +375,10 @@ export const getSuppliersForBrand = async (req, res) => {
 
 // Place an order with a supplier
 export const placeSupplierOrder = async (req, res) => {
-  const { supplier_id, beer_id, quantity, supply_price } = req.body;
+  const { pub_id, supplier_id, beer_id, quantity, supply_price } = req.body;
 
-  if (!supplier_id || !beer_id || !quantity || typeof supply_price === "undefined") {
-    return res.status(400).json({ error: "supplier_id, beer_id, quantity, and supply_price are required" });
+  if (!pub_id || !supplier_id || !beer_id || !quantity || typeof supply_price === "undefined") {
+    return res.status(400).json({ error: "pub_id, supplier_id, beer_id, quantity, and supply_price are required" });
   }
 
   if (Number(quantity) <= 0) {
@@ -409,16 +409,19 @@ export const placeSupplierOrder = async (req, res) => {
     // Calculate total amount
     const totalAmount = Number(supply_price) * Number(quantity);
 
-    // Create supplier order record
-    // We'll assume there's a supplier_orders table, but for now let's create a simple structure
-    // Since we don't have a supplier_orders table, let's create one or use an existing one
-    // For now, let's just return success with order details
+    // Insert into supplierorder table
+    const [result] = await conn.query(
+      `INSERT INTO supplierorder (order_date, status, total_cost, supplier_id, pub_id)
+       VALUES (CURDATE(), 'pending', ?, ?, ?)`,
+      [totalAmount, supplier_id, pub_id]
+    );
 
     await conn.commit();
 
     res.json({
       message: "Supplier order placed successfully",
       order: {
+        supplier_order_id: result.insertId,
         supplier_id,
         beer_id,
         beer_name: beerInfo.beer_name,
@@ -426,7 +429,8 @@ export const placeSupplierOrder = async (req, res) => {
         quantity: Number(quantity),
         supply_price: Number(supply_price),
         total_amount: totalAmount,
-        order_date: new Date()
+        order_date: new Date().toISOString().split('T')[0],
+        status: 'pending'
       }
     });
 

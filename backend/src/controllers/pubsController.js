@@ -2,64 +2,8 @@ import { pool } from "../db.js";
 
 export const getPubs = async (req, res) => {
   try {
-    // Dynamically inspect pub columns and build a safe SELECT so we don't
-    // reference non-existent columns (avoids ER_BAD_FIELD_ERROR).
-    const [[{ dbName }]] = await pool.query(`SELECT DATABASE() AS dbName`);
-
-    const [colsRes] = await pool.query(
-      `SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema = ? AND table_name = ?`,
-      [dbName, 'pub']
-    );
-    const pubCols = colsRes.map((c) => c.COLUMN_NAME.toLowerCase());
-
-    const pubNameCandidates = ['pub_name', 'name', 'pubname'].filter((c) => pubCols.includes(c));
-    const locationCandidates = ['location', 'address', 'area'].filter((c) => pubCols.includes(c));
-    const idCandidates = ['pub_id', 'id', 'pubid'].filter((c) => pubCols.includes(c));
-
-    // If none of the expected columns exist, fall back to selecting all columns.
-    if (pubNameCandidates.length === 0 && locationCandidates.length === 0 && idCandidates.length === 0) {
-      const [rows] = await pool.query(`SELECT * FROM pub`);
-      return res.json(rows);
-    }
-
-    const selectParts = [];
-    if (idCandidates.length > 0) selectParts.push(`p.${idCandidates[0]} AS pub_id`);
-    if (pubNameCandidates.length > 0) selectParts.push(`COALESCE(${pubNameCandidates.map((c) => `p.${c}`).join(', ')}) AS name`);
-    if (locationCandidates.length > 0) selectParts.push(`COALESCE(${locationCandidates.map((c) => `p.${c}`).join(', ')}) AS location`);
-
-    const sql = `SELECT ${selectParts.join(', ')} FROM pub p`;
-    const [rows] = await pool.query(sql);
-
-    // Parse location to extract address, city, country
-    const processedRows = rows.map(row => {
-      const location = row.location || '';
-      const parts = location.split(', ');
-
-      let address = '';
-      let city = '';
-      let country = '';
-
-      if (parts.length >= 2) {
-        address = parts[0];
-        city = parts[1];
-        // For now, assume all pubs are in Ireland for dummy data
-        country = 'Ireland';
-      } else {
-        address = location;
-        city = 'Unknown';
-        country = 'Unknown';
-      }
-
-      return {
-        pub_id: row.pub_id,
-        name: row.name,
-        address,
-        city,
-        country
-      };
-    });
-
-    res.json(processedRows);
+    const [rows] = await pool.query(`SELECT * FROM pub`);
+    res.json(rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Database error" });

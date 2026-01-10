@@ -21,6 +21,7 @@ export const getBeers = async (req, res) => {
         b.price,
         b.container_kind,
         b.volume_liters,
+        b.brand_id,
         br.name AS brand_name,
         br.country_of_origin
       FROM beer b
