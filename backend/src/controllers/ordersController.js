@@ -41,11 +41,11 @@ export const postOrder = async (req, res) => {
       total += price * Number(it.quantity);
     }
 
-    // If pub_id provided, check and decrement inventory in pubhasbeer
+    // If pub_id provided, check inventory (but do not decrement yet, as order starts pending)
     if (pub_id) {
       for (const it of items) {
         const [invRows] = await conn.query(
-          `SELECT quantity_available FROM pubhasbeer WHERE pub_id = ? AND beer_id = ? FOR UPDATE`,
+          `SELECT quantity_available FROM pubhasbeer WHERE pub_id = ? AND beer_id = ?`,
           [pub_id, it.beer_id]
         );
         if (!invRows || invRows.length === 0) {
@@ -57,10 +57,7 @@ export const postOrder = async (req, res) => {
           await conn.rollback();
           return res.status(400).json({ error: `Insufficient inventory for beer ${it.beer_id}` });
         }
-        await conn.query(
-          `UPDATE pubhasbeer SET quantity_available = quantity_available - ? WHERE pub_id = ? AND beer_id = ?`,
-          [it.quantity, pub_id, it.beer_id]
-        );
+        // Note: Inventory will be decremented when order status changes to 'completed'
       }
     }
 
@@ -71,8 +68,8 @@ export const postOrder = async (req, res) => {
     );
     const orderId = nextId;
     await conn.query(
-      `INSERT INTO orders (order_id, customer_id, order_date, total_amount, payment_method) VALUES (?, ?, NOW(), ?, ?)`,
-      [orderId, customer_id, total, payment_method || null]
+      `INSERT INTO orders (order_id, customer_id, pub_id, order_date, total_amount, payment_method) VALUES (?, ?, ?, NOW(), ?, ?)`,
+      [orderId, customer_id, pub_id || null, total, payment_method || null]
     );
 
     // Insert order lines with line_number, price_per_unit, line_total
@@ -105,13 +102,26 @@ export const postOrder = async (req, res) => {
 // GET /api/orders
 export const getOrders = async (req, res) => {
   try {
-    const sql = `
-      SELECT o.order_id, o.customer_id, o.order_date, o.total_amount, COALESCE(o.status, 'pending') AS status, o.payment_method,
-             (SELECT ph.pub_id FROM orderhasbeer oh JOIN pubhasbeer ph ON oh.beer_id = ph.beer_id WHERE oh.order_id = o.order_id LIMIT 1) AS pub_id
+    const { pub_id, status } = req.query;
+    let sql = `
+      SELECT o.order_id, o.customer_id, o.pub_id, o.order_date, o.total_amount, COALESCE(o.status, 'pending') AS status, o.payment_method
       FROM orders o
-      ORDER BY o.order_date DESC
     `;
-    const [rows] = await pool.query(sql);
+    const params = [];
+    const conditions = [];
+    if (pub_id) {
+      conditions.push(`o.pub_id = ?`);
+      params.push(pub_id);
+    }
+    if (status) {
+      conditions.push(`COALESCE(o.status, 'pending') = ?`);
+      params.push(status);
+    }
+    if (conditions.length > 0) {
+      sql += ` WHERE ${conditions.join(' AND ')}`;
+    }
+    sql += ` ORDER BY o.order_id DESC`;
+    const [rows] = await pool.query(sql, params);
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -122,19 +132,58 @@ export const getOrders = async (req, res) => {
 // PATCH /api/orders/:id/status
 export const updateOrderStatus = async (req, res) => {
   const orderId = req.params.id;
-  const { status } = req.body;
+  const { status, pub_id } = req.body;
   const allowed = ["pending", "completed", "cancelled"];
   if (!status || !allowed.includes(String(status).toLowerCase())) {
     return res.status(400).json({ error: `Status is required and must be one of: ${allowed.join(", ")}` });
   }
 
+  const conn = await pool.getConnection();
   try {
-    const [result] = await pool.query(`UPDATE orders SET status = ? WHERE order_id = ?`, [status, orderId]);
-    if (result.affectedRows === 0) return res.status(404).json({ error: "Order not found" });
+    await conn.beginTransaction();
+
+    // Get current status
+    const [currentRows] = await conn.query(`SELECT status FROM orders WHERE order_id = ? FOR UPDATE`, [orderId]);
+    if (currentRows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ error: "Order not found" });
+    }
+    const oldStatus = currentRows[0].status;
+
+    // Update status
+    await conn.query(`UPDATE orders SET status = ? WHERE order_id = ?`, [status, orderId]);
+
+    // Adjust inventory if pub_id provided
+    if (pub_id) {
+      const [items] = await conn.query(`SELECT beer_id, quantity FROM orderhasbeer WHERE order_id = ?`, [orderId]);
+      for (const item of items) {
+        let adjustment = 0;
+        if (status === 'completed' && oldStatus !== 'completed') {
+          adjustment = -item.quantity; // subtract
+        } else if (status === 'cancelled' && oldStatus === 'completed') {
+          adjustment = item.quantity; // add back
+        }
+        if (adjustment !== 0) {
+          await conn.query(
+            `UPDATE pubhasbeer SET quantity_available = quantity_available + ? WHERE pub_id = ? AND beer_id = ?`,
+            [adjustment, pub_id, item.beer_id]
+          );
+        }
+      }
+    }
+
+    await conn.commit();
     res.json({ order_id: Number(orderId), status });
   } catch (err) {
     console.error(err);
+    try {
+      await conn.rollback();
+    } catch (e) {
+      console.error("Rollback error", e);
+    }
     res.status(500).json({ error: "Database error" });
+  } finally {
+    conn.release();
   }
 };
 

@@ -53,7 +53,6 @@ CREATE TABLE `beer` (
 
 LOCK TABLES `beer` WRITE;
 /*!40000 ALTER TABLE `beer` DISABLE KEYS */;
-INSERT INTO `beer` VALUES (1,'Guinness Draught','Ireland',4.20,'Classic Irish stout',3.50,1,'stout','glass',0.50),(2,'Murphy\'s Red','Ireland',5.00,'Smooth Irish red ale',3.00,2,'ale','can',0.33),(3,'Budweiser Lager','USA',5.50,'Popular American lager',2.50,3,'lager','can',0.33),(4,'Heineken Lager','Netherlands',5.00,'Dutch lager',2.80,4,'lager','can',0.33),(5,'Mythos Lager','Greece',5.00,'Greek lager',2.50,5,'lager','can',0.33),(6,'Fix Hellas','Greece',5.00,'Historic Greek beer',2.70,6,'lager','glass',0.50),(7,'Corona Extra','Mexico',4.60,'Mexican lager',3.00,7,'lager','bottle',0.33),(8,'Carlsberg Pilsner','Denmark',5.00,'Danish lager',2.90,8,'lager','can',0.33),(9,'Stella Artois','Belgium',5.20,'Belgian lager',3.20,9,'lager','glass',0.50),(10,'Pilsner Urquell','Czech Republic',4.40,'Original pilsner',3.00,10,'lager','glass',0.50),(11,'Strong Lager','Germany',7.20,'High alcohol lager',3.80,10,'lager','bottle',0.50);
 /*!40000 ALTER TABLE `beer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -112,7 +111,6 @@ CREATE TABLE `brand` (
 
 LOCK TABLES `brand` WRITE;
 /*!40000 ALTER TABLE `brand` DISABLE KEYS */;
-INSERT INTO `brand` VALUES (1,'Guinness','Ireland','www.guinness.com','Famous Irish stout',1759),(2,'Murphy','Ireland','www.murphys.com','Irish red ale',1856),(3,'Budweiser','USA','www.budweiser.com','American lager',1876),(4,'Heineken','Netherlands','www.heineken.com','Dutch lager',1873),(5,'Mythos','Greece','www.mythos.com','Greek lager',1997),(6,'Fix','Greece','www.fix.gr','Historic Greek beer',1864),(7,'Corona','Mexico','www.corona.com','Mexican lager',1925),(8,'Carlsberg','Denmark','www.carlsberg.com','Danish lager',1847),(9,'Stella Artois','Belgium','www.stellaartois.com','Belgian lager',1366),(10,'Pilsner Urquell','Czech Republic','www.pilsnerurquell.com','Original pilsner',1842);
 /*!40000 ALTER TABLE `brand` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -173,7 +171,6 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'2023-01-10',50,'nikos@example.com','+306912345678','Egnatia 100','Thessaloniki','54622','Greece','Nikos','Papadopoulos','1995-06-15'),(2,'2024-05-20',20,'john@example.com','+12025550124','Broadway 200','New York','10003','USA','John','Smith','1990-08-20'),(3,'2022-03-12',15,'maria@example.com','+306912345679','Patision 50','Athens','10434','Greece','Maria','Kosta','1998-02-10'),(4,'2021-07-25',30,'george@example.com','+306912345680','Venizelou 12','Patras','26222','Greece','George','Ioannou','1985-11-05'),(5,'2020-09-18',40,'eleni@example.com','+306912345681','Dimokratias 20','Heraklion','71203','Greece','Eleni','Georgiou','1992-04-22'),(6,'2023-11-02',25,'kostas@example.com','+306912345682','Kountouriotou 15','Larissa','41223','Greece','Kostas','Papanikolaou','1997-09-12'),(7,'2024-01-30',10,'anna@example.com','+306912345683','Dimokratias 30','Volos','38222','Greece','Anna','Karagianni','1999-12-01'),(8,'2022-06-14',35,'nikos2@example.com','+306912345684','Averof 10','Ioannina','45222','Greece','Nikos','Christou','1988-07-07'),(9,'2021-12-05',45,'sofia@example.com','+306912345685','Venizelou 5','Kavala','65202','Greece','Sofia','Dimitriou','1993-03-19'),(10,'2020-04-21',60,'manolis@example.com','+306912345686','Sokratous 100','Rhodes','85101','Greece','Manolis','Antoniou','1980-01-25');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -204,7 +201,6 @@ CREATE TABLE `customerreviewsbeer` (
 
 LOCK TABLES `customerreviewsbeer` WRITE;
 /*!40000 ALTER TABLE `customerreviewsbeer` DISABLE KEYS */;
-INSERT INTO `customerreviewsbeer` VALUES (1,1,'Amazing stout, very smooth!','2024-06-05',5.0),(2,2,'Not my taste, too bitter.','2024-06-06',2.0),(3,3,'Classic lager, refreshing.','2024-06-07',4.5),(4,4,'Too light for me.','2024-06-08',2.5),(5,5,'Great Greek lager!','2024-06-09',4.0),(6,6,'Historic taste, love it.','2024-06-10',5.0),(7,7,'Perfect with lime, very smooth.','2024-06-11',4.2),(8,8,'Balanced pilsner, good quality.','2024-06-12',3.8);
 /*!40000 ALTER TABLE `customerreviewsbeer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -252,7 +248,6 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES (1,'2020-05-01',1200.00,'bartender1@pub.gr','evening','bartender','+302310111111','Nikos','Papadopoulos',1),(2,'2021-03-15',2000.00,'manager1@pub.gr','morning','manager','+302103333333','Eleni','Kosta',2),(3,'2022-07-10',950.00,'waiter1@pub.gr','night','waiter','+302610222222','Dimitris','Ioannou',3),(4,'2019-11-20',1100.00,'bartender2@pub.gr','evening','bartender','+302810333333','Maria','Georgiou',4),(5,'2023-01-05',1300.00,'cleaner1@pub.gr','morning','cleaner','+302410444444','Kostas','Papanikolaou',5),(6,'2020-09-12',1400.00,'manager2@pub.gr','morning','manager','+302421555555','Anna','Karagianni',6),(7,'2021-04-18',1000.00,'waiter2@pub.gr','night','waiter','+302651666666','Nikos','Christou',7),(8,'2018-06-25',1250.00,'bartender3@pub.gr','evening','bartender','+302510777777','Sofia','Dimitriou',8),(9,'2022-02-14',1350.00,'manager3@pub.gr','morning','manager','+302241888888','Manolis','Antoniou',9),(10,'2019-08-30',900.00,'cleaner2@pub.gr','night','cleaner','+302821999999','Maria','Kalogeraki',10);
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -314,7 +309,6 @@ CREATE TABLE `orderhasbeer` (
 
 LOCK TABLES `orderhasbeer` WRITE;
 /*!40000 ALTER TABLE `orderhasbeer` DISABLE KEYS */;
-INSERT INTO `orderhasbeer` VALUES (1,1,1,2,3.50,7.00),(2,1,3,1,2.50,2.50),(3,1,4,2,2.80,5.60),(4,1,5,2,3.20,6.40),(5,1,2,1,3.00,3.00),(6,1,6,2,4.25,8.50),(7,1,7,1,3.80,3.80);
 /*!40000 ALTER TABLE `orderhasbeer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -329,12 +323,15 @@ CREATE TABLE `orders` (
   `order_id` int NOT NULL,
   `status` enum('completed','pending','cancelled') DEFAULT NULL,
   `customer_id` int DEFAULT NULL,
+  `pub_id` int DEFAULT NULL,
   `total_amount` decimal(6,2) DEFAULT NULL,
   `order_date` date DEFAULT NULL,
   `payment_method` enum('card','cash','check','bank_transaction') DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`)
+  KEY `pub_id` (`pub_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`),
+  CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`pub_id`) REFERENCES `pub` (`pub_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -344,7 +341,6 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,'completed',1,7.00,'2024-06-01','card'),(2,'pending',2,2.50,'2024-06-02','cash'),(3,'completed',3,5.60,'2024-06-03','card'),(4,'completed',4,6.40,'2024-06-04','cash'),(5,'pending',5,3.00,'2024-06-05','card'),(6,'completed',6,8.50,'2024-06-06','cash'),(7,'completed',7,4.20,'2024-06-07','card'),(8,'pending',8,9.00,'2024-06-08','cash'),(9,'completed',9,7.50,'2024-06-09','card'),(10,'completed',10,6.00,'2024-06-10','cash');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -407,7 +403,6 @@ CREATE TABLE `pub` (
 
 LOCK TABLES `pub` WRITE;
 /*!40000 ALTER TABLE `pub` DISABLE KEYS */;
-INSERT INTO `pub` VALUES (1,'Pub Thessaloniki','Maria Papadopoulou','+302310123456','Tsimiski 12','Thessaloniki','54621','Greece'),(2,'Pub Athens','Giorgos Nikolaou','+302103334455','Ermou 45','Athens','10563','Greece'),(3,'Pub Patras','Dimitris Ioannou','+302610223344','Korinthou 50','Patras','26221','Greece'),(4,'Pub Heraklion','Eleni Georgiou','+302810334455','Kalokairinou 20','Heraklion','71202','Greece'),(5,'Pub Larissa','Kostas Papanikolaou','+302410445566','Kountouriotou 15','Larissa','41222','Greece'),(6,'Pub Volos','Anna Karagianni','+302421556677','Dimokratias 30','Volos','38221','Greece'),(7,'Pub Ioannina','Nikos Christou','+302651667788','Averof 10','Ioannina','45221','Greece'),(8,'Pub Kavala','Sofia Dimitriou','+302510778899','Venizelou 5','Kavala','65201','Greece'),(9,'Pub Rhodes','Manolis Antoniou','+302241889900','Sokratous 100','Rhodes','85100','Greece'),(10,'Pub Chania','Maria Kalogeraki','+302821990011','Halidon 25','Chania','73131','Greece');
 /*!40000 ALTER TABLE `pub` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -439,7 +434,6 @@ CREATE TABLE `pubhasbeer` (
 
 LOCK TABLES `pubhasbeer` WRITE;
 /*!40000 ALTER TABLE `pubhasbeer` DISABLE KEYS */;
-INSERT INTO `pubhasbeer` (`pub_id`, `beer_id`, `quantity_available`, `last_updated`, `reorder_threshold`, `storage_location`) VALUES (1,1,50.00,'2024-06-01',20.00,'Cellar A'),(1,3,10.00,'2024-06-01',15.00,'Fridge B'),(2,2,30.00,'2024-06-01',10.00,'Cellar C'),(2,4,25.00,'2024-06-02',10.00,'Fridge D'),(3,5,40.00,'2024-06-03',15.00,'Cellar E'),(4,6,20.00,'2024-06-04',10.00,'Fridge F'),(5,7,35.00,'2024-06-05',12.00,'Cellar G'),(6,8,18.00,'2024-06-06',10.00,'Fridge H'),(7,9,22.00,'2024-06-07',8.00,'Cellar I'),(8,10,15.00,'2024-06-08',10.00,'Fridge J');
 /*!40000 ALTER TABLE `pubhasbeer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -516,7 +510,6 @@ CREATE TABLE `supplier` (
 
 LOCK TABLES `supplier` WRITE;
 /*!40000 ALTER TABLE `supplier` DISABLE KEYS */;
-INSERT INTO `supplier` VALUES (1,'Irish Beverages Ltd','Sean O\'Connor','info@irishbev.ie','+3531234567','Main St','Dublin','10001','Ireland','IE123456789'),(2,'American Beer Imports','John Miller','sales@abimports.com','+12025550123','5th Ave','New York','10002','USA','US987654321'),(3,'Greek Drinks SA','Maria Papadopoulou','info@greekdrinks.gr','+302103334455','Ermou 45','Athens','10563','Greece','GR123456789'),(4,'Dutch Breweries BV','Hans Vermeer','contact@dutchbrew.nl','+31101234567','Damrak 10','Amsterdam','1012','Netherlands','NL123456789'),(5,'Mexican Imports SA','Carlos Lopez','ventas@meximports.mx','+525512345678','Av Reforma','Mexico City','01000','Mexico','MX123456789'),(6,'Danish Beer Export','Lars Jensen','export@danishbeer.dk','+4530123456','Nyhavn 20','Copenhagen','1051','Denmark','DK123456789'),(7,'Belgian Breweries SA','Jean Dupont','info@belbrew.be','+3221234567','Grand Place','Brussels','1000','Belgium','BE123456789'),(8,'Czech Beer Export','Pavel Novak','sales@czechbeer.cz','+420123456789','Namesti 1','Prague','11000','Czech Republic','CZ123456789'),(9,'UK Beer Distribution','William Smith','info@ukbeer.co.uk','+441234567890','Oxford St','London','W1D','UK','UK123456789'),(10,'German Beer GmbH','Karl Müller','kontakt@gerbeer.de','+491234567890','Berliner Str','Berlin','10115','Germany','DE123456789');
 /*!40000 ALTER TABLE `supplier` ENABLE KEYS */;
 UNLOCK TABLES;
 
