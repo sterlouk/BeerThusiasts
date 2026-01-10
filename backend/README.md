@@ -15,16 +15,38 @@ DB_PASSWORD=ster
 DB_NAME=beersthuasiasts
 ```
 
-Install and start the dev server:
+Install dependencies:
 
 ```powershell
 cd backend
 npm install
+```
+
+## Database Setup
+
+To initialize the database with schema and dummy data, run:
+
+```powershell
+node reset_db.js
+```
+
+This will:
+1. Load the database schema from `../dbDump.sql`
+2. Clear all existing data
+3. Load sample data from `dummy_data.sql`
+
+To truncate only table data (without reloading schema), you can run the SQL file:
+
+```sql
+source clean_tables.sql
+```
+
+## Start the Dev Server
+
+```powershell
 npm run dev
 ```
 
 The server listens on http://localhost:5001 by default.
 
-Endpoints are mounted under `/api` (e.g. `/api/beers`, `/api/pubs`, `/api/admin`).
-
-If you need to initialize sample data, run your SQL scripts or use the existing migration utilities in `src`.
+Endpoints are mounted under `/api` (e.g. `/api/beers`, `/api/pubs`, `/api/orders`, `/api/admin`).
