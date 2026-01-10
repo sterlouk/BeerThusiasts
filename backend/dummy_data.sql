@@ -244,3 +244,16 @@ INSERT INTO pubhasbeer (pub_id, beer_id, quantity_available, last_updated, reord
 (10, 1, 70.00, '2024-12-16', 14.00, 'Shelf J1'),
 (10, 11, 50.00, '2024-12-17', 10.00, 'Bar J2'),
 (10, 9, 85.00, '2024-12-18', 17.00, 'Cooler J3');
+
+-- Dummy data for supplierorder table
+INSERT INTO supplierorder (supplier_order_id, order_date, status, total_cost, expected_delivery_date, actual_delivery_date, payment_method, reason_pending, supplier_id, pub_id) VALUES
+(1, '2024-12-01', 'completed', 450.00, '2024-12-05', '2024-12-05', 'bank_transaction', NULL, 1, 1),
+(2, '2024-12-02', 'completed', 320.00, '2024-12-06', '2024-12-06', 'card', NULL, 2, 2),
+(3, '2024-12-03', 'pending', 280.00, '2024-12-10', NULL, NULL, 'Waiting for payment approval', 3, 3),
+(4, '2024-12-04', 'completed', 380.00, '2024-12-08', '2024-12-08', 'bank_transaction', NULL, 4, 4),
+(5, '2024-12-05', 'pending', 520.00, '2024-12-12', NULL, NULL, 'Driver delayed due to weather', 5, 5),
+(6, '2024-12-06', 'completed', 410.00, '2024-12-10', '2024-12-10', 'card', NULL, 6, 6),
+(7, '2024-12-07', 'cancelled', 350.00, '2024-12-14', NULL, NULL, 'Customer cancelled order', 7, 7),
+(8, '2024-12-08', 'pending', 490.00, '2024-12-15', NULL, NULL, 'Awaiting stock availability', 8, 8),
+(9, '2024-12-09', 'completed', 275.00, '2024-12-13', '2024-12-13', 'bank_transaction', NULL, 9, 1),
+(10, '2024-12-10', 'pending', 560.00, '2024-12-17', NULL, NULL, 'Pending supplier confirmation', 10, 2);

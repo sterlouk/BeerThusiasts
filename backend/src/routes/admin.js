@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-import { createBeer, updateBeer, upsertPubHasBeer, getEnums, getEmployees, createEmployee, updateEmployee, deleteEmployee, uploadBeerImage, getSuppliersForBrand, placeSupplierOrder } from "../controllers/adminController.js";
+import { createBeer, updateBeer, upsertPubHasBeer, getEnums, getEmployees, createEmployee, updateEmployee, deleteEmployee, uploadBeerImage, getSuppliersForBrand, placeSupplierOrder, getSupplierOrders, updateSupplierOrderStatus } from "../controllers/adminController.js";
 
 const router = express.Router();
 
@@ -33,5 +33,7 @@ router.delete("/employees/:id", deleteEmployee);
 // Supplier ordering routes
 router.get("/suppliers/brand/:brandId", getSuppliersForBrand);
 router.post("/supplier-orders", placeSupplierOrder);
+router.get("/supplier-orders", getSupplierOrders);
+router.put("/supplier-orders/:id", updateSupplierOrderStatus);
 
 export default router;
