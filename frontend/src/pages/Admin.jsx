@@ -365,6 +365,7 @@ function PubHasBeerForm() {
 }
 
 function RestockPanel() {
+  const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -383,35 +384,9 @@ function RestockPanel() {
 
   useEffect(() => { load(); }, [load]);
 
-  const handleSetQuantity = async (pub_id, beer_id) => {
-    const val = prompt('Set new quantity for pub ' + pub_id + ', beer ' + beer_id + ':');
-    if (val === null) return;
-    const qty = Number(val);
-    if (Number.isNaN(qty)) return alert('❌ Invalid number');
-    try {
-      await upsertPubHasBeerAdmin({ pub_id, beer_id, quantity_available: qty });
-      alert('✅ Quantity updated successfully!');
-      load();
-    } catch (e) {
-      console.error(e);
-      alert('❌ Failed to update quantity');
-    }
-  };
-
-  const handleMarkOrdered = async (pub_id, beer_id) => {
-    const val = prompt('Enter days until reorder arrives (integer), or 0 to clear:');
-    if (val === null) return;
-    const days = Number(val);
-    if (Number.isNaN(days)) return alert('❌ Invalid number');
-    try {
-      await upsertPubHasBeerAdmin({ pub_id, beer_id, remaining_until_reorder: days });
-      alert('✅ Marked as ordered!');
-      load();
-    } catch (e) {
-      console.error(e);
-      alert('❌ Failed to mark ordered');
-    }
-  };
+  const handleSetQuantity = useCallback((pub_id, beer_id) => {
+    navigate(`/place-order?pub_id=${pub_id}&beer_id=${beer_id}`);
+  }, [navigate]);
 
   return (
     <div>
@@ -434,7 +409,6 @@ function RestockPanel() {
                 <th style={{ padding: '12px', textAlign: 'left', fontWeight: "bold", borderRight: "1px solid #34495e" }}>🍺 Beer</th>
                 <th style={{ padding: '12px', textAlign: 'right', fontWeight: "bold", borderRight: "1px solid #34495e" }}>📦 Current Qty</th>
                 <th style={{ padding: '12px', textAlign: 'right', fontWeight: "bold", borderRight: "1px solid #34495e" }}>🎯 Reorder At</th>
-                <th style={{ padding: '12px', textAlign: 'right', borderRight: "1px solid #34495e", fontWeight: "bold" }}>⏰ Days Left</th>
                 <th style={{ padding: '12px', textAlign: 'center', fontWeight: "bold" }}>⚡ Actions</th>
               </tr>
             </thead>
@@ -445,11 +419,9 @@ function RestockPanel() {
                   <td style={{ padding: '12px', borderRight: "1px solid #ecf0f1" }}>{r.beer_name || `Beer ${r.beer_id}`}</td>
                   <td style={{ padding: '12px', textAlign: 'right', borderRight: "1px solid #ecf0f1", fontWeight: "bold", color: r.quantity_available <= (r.reorder_threshold || 0) ? "#e74c3c" : "#27ae60" }}>{r.quantity_available ?? '—'}</td>
                   <td style={{ padding: '12px', textAlign: 'right', borderRight: "1px solid #ecf0f1" }}>{r.reorder_threshold ?? '—'}</td>
-                  <td style={{ padding: '12px', textAlign: 'right', borderRight: "1px solid #ecf0f1", fontWeight: "bold", color: (r.remaining_until_reorder || 0) <= 1 ? "#e74c3c" : "#f39c12" }}>{r.remaining_until_reorder ?? '—'}</td>
                   <td style={{ padding: '12px', textAlign: 'center' }}>
                     <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
-                      <button onClick={() => handleSetQuantity(r.pub_id, r.beer_id)} style={{ padding: "6px 12px", background: "#3498db", color: "white", border: "none", borderRadius: "5px" }}>Set Qty</button>
-                      <button onClick={() => handleMarkOrdered(r.pub_id, r.beer_id)} style={{ padding: "6px 12px", background: "#e67e22", color: "white", border: "none", borderRadius: "5px" }}>Mark Ordered</button>
+                      <button onClick={() => handleSetQuantity(r.pub_id, r.beer_id)} style={{ padding: "6px 12px", background: "#27ae60", color: "white", border: "none", borderRadius: "5px" }}>Order Now</button>
                     </div>
                   </td>
                 </tr>

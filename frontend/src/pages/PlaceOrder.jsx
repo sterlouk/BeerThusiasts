@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { fetchBeers, fetchSuppliersForBrand, placeSupplierOrder, fetchPubs } from "../api/beer";
 
 export default function PlaceOrder() {
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ pub_id: "", beer_id: "", supplier_id: "", quantity: "" });
   const [beers, setBeers] = useState([]);
@@ -21,31 +23,47 @@ export default function PlaceOrder() {
         const sortedBeers = (beerData || []).sort((a, b) => a.beer_id - b.beer_id);
         setBeers(sortedBeers);
         setPubs(pubData || []);
+
+        // Pre-fill form with query parameters if present (only on initial load)
+        const pubId = searchParams.get('pub_id');
+        const beerId = searchParams.get('beer_id');
+        if (pubId) {
+          setForm((s) => ({ ...s, pub_id: parseInt(pubId) }));
+        }
+        if (beerId) {
+          setForm((s) => ({ ...s, beer_id: parseInt(beerId) }));
+        }
       } catch (err) {
         console.error('Failed to load data', err);
         alert('❌ Failed to load data');
       }
     };
     loadData();
-  }, []);
+  }, [searchParams]);
+
+  // Load suppliers when beer_id changes
+  useEffect(() => {
+    if (form.beer_id && beers.length > 0) {
+      const selectedBeer = beers.find(b => b.beer_id === form.beer_id);
+      if (selectedBeer) {
+        const loadSuppliers = async () => {
+          try {
+            const supplierData = await fetchSuppliersForBrand(selectedBeer.brand_id);
+            setSuppliers(supplierData || []);
+          } catch (err) {
+            console.error('Failed to load suppliers', err);
+            setSuppliers([]);
+          }
+        };
+        loadSuppliers();
+      }
+    }
+  }, [form.beer_id, beers]);
 
   const handleChange = (e) => setForm((s) => ({ ...s, [e.target.name]: e.target.value }));
 
   const nextStep = () => setStep((s) => s + 1);
   const prevStep = () => setStep((s) => s - 1);
-
-  const handleBeerSelect = async (beerId) => {
-    setForm((s) => ({ ...s, beer_id: beerId, supplier_id: "" }));
-    setSuppliers([]);
-
-    try {
-      const supplierData = await fetchSuppliersForBrand(beers.find(b => b.beer_id === beerId)?.brand_id);
-      setSuppliers(supplierData || []);
-    } catch (err) {
-      console.error('Failed to load suppliers', err);
-      alert('❌ Failed to load suppliers for this beer');
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -142,7 +160,7 @@ export default function PlaceOrder() {
               {beers.map((beer) => (
                 <div
                   key={beer.beer_id}
-                  onClick={() => handleBeerSelect(beer.beer_id)}
+                  onClick={() => setForm((s) => ({ ...s, beer_id: beer.beer_id, supplier_id: "" }))}
                   style={{
                     border: form.beer_id === beer.beer_id ? "2px solid #3498db" : "1px solid #ddd",
                     borderRadius: "8px",

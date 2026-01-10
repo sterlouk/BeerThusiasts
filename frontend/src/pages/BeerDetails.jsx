@@ -41,7 +41,7 @@ export default function BeerDetails() {
   };
 
   const averageRating = reviews.length > 0
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    ? Number((reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviews.length).toFixed(1))
     : 0;
 
   if (isCreate) {

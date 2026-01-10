@@ -11,6 +11,7 @@ import Header from "./components/Header";
 import ServiceOrders from "./pages/ServiceOrders";
 import OrderDetails from "./pages/OrderDetails";
 import Playroom from "./pages/Playroom";
+import PlaceOrder from "./pages/PlaceOrder";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/beers/:id" element={<BeerDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/service" element={<ServiceOrders />} />
         <Route path="/service/order/:id" element={<OrderDetails />} />
         <Route path="/admin" element={<Admin />} />

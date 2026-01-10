@@ -7,6 +7,7 @@ const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001";
 export default function BeerCard({ beer }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
+  const [failedImage, setFailedImage] = useState(false);
   const navigate = useNavigate();
 
   const handleAddToCart = () => {
@@ -45,26 +46,17 @@ export default function BeerCard({ beer }) {
     className="beer-card-container"
     >
       {/* Beer Image */}
-      <div style={{ textAlign: "center", marginBottom: "15px" }}>
-        <img
-          src={`${API_BASE}/images/beers/${beer.beer_id}.jpg`}
-          alt={beer.beer_name}
-          onError={(e) => {
-            // try png then fallback to emoji placeholder
-            if (!e.target.dataset.triedPng) {
-              e.target.dataset.triedPng = '1';
-              e.target.src = `${API_BASE}/images/beers/${beer.beer_id}.png`;
-              return;
-            }
-            e.target.style.display = 'none';
-            const parent = e.target.parentNode;
-            const placeholder = document.createElement('div');
-            placeholder.textContent = '🍺';
-            placeholder.style.fontSize = '3rem';
-            parent.appendChild(placeholder);
-          }}
-          style={{ maxWidth: '160px', maxHeight: '120px', objectFit: 'cover', borderRadius: '8px' }}
-        />
+      <div style={{ textAlign: "center", marginBottom: "15px", height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {!failedImage ? (
+          <img
+            src={`${API_BASE}/images/beers/${beer.beer_id}.jpg`}
+            alt={beer.beer_name}
+            onError={() => setFailedImage(true)}
+            style={{ maxWidth: '160px', maxHeight: '120px', objectFit: 'cover', borderRadius: '8px' }}
+          />
+        ) : (
+          <div style={{ fontSize: '3rem' }}>🍺</div>
+        )}
       </div>
 
       {/* Beer Info */}
