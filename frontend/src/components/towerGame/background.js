@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { checkMoveDown, getMoveDownValue } from './utils'
 import * as constant from './constant'
 

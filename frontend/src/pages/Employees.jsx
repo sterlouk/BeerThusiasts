@@ -7,6 +7,7 @@ export default function Employees() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [selectedPubId, setSelectedPubId] = useState(null);
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -19,12 +20,16 @@ export default function Employees() {
     pub_id: ""
   });
 
-  const loadData = async () => {
+  const loadData = async (pubId = null) => {
     setLoading(true);
     try {
-      const [empData, pubData] = await Promise.all([fetchEmployees(), fetchPubs()]);
-      setEmployees(empData);
+      // First load pubs to ensure we have the pub data for filtering
+      const pubData = await fetchPubs();
       setPubs(pubData);
+      
+      // Then load employees (filtered if pubId is provided)
+      const empData = await fetchEmployees(pubId);
+      setEmployees(empData);
     } catch (err) {
       console.error("Failed to load data:", err);
       alert("❌ Failed to load data: " + err.message);
@@ -34,8 +39,42 @@ export default function Employees() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    // Load pubs first on initial mount
+    const loadInitialData = async () => {
+      setLoading(true);
+      try {
+        const pubData = await fetchPubs();
+        setPubs(pubData);
+        // Then load employees (no filter initially)
+        const empData = await fetchEmployees(null);
+        setEmployees(empData);
+      } catch (err) {
+        console.error("Failed to load initial data:", err);
+        alert("❌ Failed to load data: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadInitialData();
+  }, []); // Only run on mount
+
+  useEffect(() => {
+    // Reload employees when pub filter changes (but not on initial mount)
+    if (selectedPubId !== null) {
+      const loadFilteredEmployees = async () => {
+        try {
+          const empData = await fetchEmployees(selectedPubId);
+          setEmployees(empData);
+        } catch (err) {
+          console.error("Failed to load filtered employees:", err);
+          alert("❌ Failed to load employees: " + err.message);
+        }
+      };
+      
+      loadFilteredEmployees();
+    }
+  }, [selectedPubId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -96,11 +135,12 @@ export default function Employees() {
       shift: "",
       hire_date: "",
       salary: "",
-      pub_id: ""
+      pub_id: selectedPubId || ""
     });
   };
 
   const totalSalary = employees.reduce((sum, emp) => sum + (Number(emp.salary) || 0), 0);
+  const selectedPub = pubs.find(pub => Number(pub.pub_id) === Number(selectedPubId));
 
   if (loading) return (
     <div style={{
@@ -152,33 +192,70 @@ export default function Employees() {
               margin: 0,
               fontSize: "1.1rem"
             }}>
-              Manage employee information and company directory
+              {selectedPubId
+                ? `Viewing employees for ${selectedPub?.pub_name || 'selected pub'} • Manage employee information and company directory`
+                : 'Manage employee information and company directory'
+              }
             </p>
           </div>
 
-          <button
-            onClick={() => {
-              setEditingEmployee(null);
-              resetForm();
-              setShowForm(true);
-            }}
-            style={{
-              padding: "12px 20px",
-              background: "linear-gradient(45deg, #27ae60, #229954)",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "1rem",
-              fontWeight: "bold",
-              cursor: "pointer",
-              boxShadow: "0 4px 15px rgba(39, 174, 96, 0.3)",
-              transition: "transform 0.2s"
-            }}
-            onMouseOver={(e) => e.target.style.transform = "translateY(-2px)"}
-            onMouseOut={(e) => e.target.style.transform = "translateY(0)"}
-          >
-            ➕ Add Employee
-          </button>
+          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+            {/* Pub Filter */}
+            <div>
+              <label style={{
+                display: "block",
+                marginBottom: "5px",
+                fontWeight: "bold",
+                color: "#2c3e50",
+                fontSize: "0.9rem"
+              }}>
+                🏪 Filter by Pub:
+              </label>
+              <select
+                value={selectedPubId || ""}
+                onChange={(e) => setSelectedPubId(e.target.value === "" ? null : parseInt(e.target.value))}
+                style={{
+                  padding: "8px 12px",
+                  border: "2px solid #ecf0f1",
+                  borderRadius: "5px",
+                  fontSize: "0.9rem",
+                  background: "white",
+                  minWidth: "200px"
+                }}
+              >
+                <option value="">All Pubs</option>
+                {pubs.map(pub => (
+                  <option key={pub.pub_id} value={pub.pub_id}>
+                    {pub.name} (ID: {pub.pub_id})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              onClick={() => {
+                setEditingEmployee(null);
+                resetForm();
+                setShowForm(true);
+              }}
+              style={{
+                padding: "12px 20px",
+                background: "linear-gradient(45deg, #27ae60, #229954)",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                fontWeight: "bold",
+                cursor: "pointer",
+                boxShadow: "0 4px 15px rgba(39, 174, 96, 0.3)",
+                transition: "transform 0.2s"
+              }}
+              onMouseOver={(e) => e.target.style.transform = "translateY(-2px)"}
+              onMouseOut={(e) => e.target.style.transform = "translateY(0)"}
+            >
+              ➕ Add Employee
+            </button>
+          </div>
         </div>
 
         {/* Summary Stats */}
@@ -200,7 +277,9 @@ export default function Employees() {
           }}>
             <div style={{ fontSize: "2rem", marginBottom: "5px" }}>👥</div>
             <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{employees.length}</div>
-            <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>Total Employees</div>
+            <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>
+              {selectedPubId ? `Employees at ${selectedPub?.pub_name || 'Selected Pub'}` : 'Total Employees'}
+            </div>
           </div>
 
           <div style={{
@@ -215,8 +294,31 @@ export default function Employees() {
           }}>
             <div style={{ fontSize: "2rem", marginBottom: "5px" }}>💰</div>
             <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>${totalSalary.toLocaleString()}</div>
-            <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>Total Salary Budget</div>
+            <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>
+              {selectedPubId ? `Budget for ${selectedPub?.pub_name || 'Selected Pub'}` : 'Total Salary Budget'}
+            </div>
           </div>
+
+          {selectedPubId && (
+            <div style={{
+              background: "linear-gradient(45deg, #9b59b6, #8e44ad)",
+              color: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              flex: "1",
+              minWidth: "200px",
+              textAlign: "center",
+              boxShadow: "0 4px 15px rgba(155, 89, 182, 0.3)"
+            }}>
+              <div style={{ fontSize: "2rem", marginBottom: "5px" }}>🏪</div>
+              <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                {selectedPub ? selectedPub.pub_name : `Pub ID: ${selectedPubId}`}
+              </div>
+              <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>
+                Pub ID: {selectedPubId}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Employee Form Modal */}

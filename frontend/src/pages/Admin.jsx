@@ -1,8 +1,151 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { upsertPubHasBeerAdmin, fetchPubsNeedsRestock, fetchBeers } from "../api/beer";
+import PlaceOrder from "./PlaceOrder";
 import Employees from "./Employees";
-import UploadImageForm from "../components/UploadImageForm";
+
+// Restock Alert Component
+function RestockAlert({ onNavigateToRestock }) {
+  const [restockCount, setRestockCount] = useState(0);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const checkRestock = useCallback(async () => {
+    try {
+      const data = await fetchPubsNeedsRestock();
+      const count = data ? data.length : 0;
+      setRestockCount(count);
+      setShowAlert(count > 0);
+    } catch (err) {
+      console.error('Failed to check restock status', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Check immediately
+    checkRestock();
+    
+    // Check every 30 seconds
+    const interval = setInterval(checkRestock, 30000);
+    
+    return () => clearInterval(interval);
+  }, [checkRestock]);
+
+  if (!showAlert) return null;
+
+  return (
+    <>
+      <style>
+        {`
+          @keyframes slideInRight {
+            from {
+              transform: translateX(100%);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+            }
+          }
+        `}
+      </style>
+      <div style={{
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        background: 'linear-gradient(45deg, #e74c3c, #c0392b)',
+        color: 'white',
+        padding: '15px 20px',
+        borderRadius: '10px',
+        boxShadow: '0 4px 15px rgba(231, 76, 60, 0.4)',
+        cursor: 'pointer',
+        zIndex: 1000,
+        animation: 'slideInRight 0.5s ease-out',
+        maxWidth: '300px',
+        transition: 'all 0.2s ease'
+      }}
+      onClick={() => {
+        setShowAlert(false);
+        onNavigateToRestock();
+      }}
+      onMouseOver={(e) => {
+        e.target.style.transform = 'translateY(-2px)';
+        e.target.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.5)';
+      }}
+      onMouseOut={(e) => {
+        e.target.style.transform = 'translateY(0)';
+        e.target.style.boxShadow = '0 4px 15px rgba(231, 76, 60, 0.4)';
+      }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+          <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>Restock Alert!</div>
+            <div style={{ fontSize: '0.9rem', marginTop: '2px' }}>
+              {restockCount} item{restockCount !== 1 ? 's' : ''} need{restockCount === 1 ? 's' : ''} restocking
+            </div>
+            <div style={{ fontSize: '0.8rem', marginTop: '8px', opacity: 0.9 }}>
+              Click to manage restock →
+            </div>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowAlert(false);
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '1.2rem',
+              padding: '0',
+              opacity: 0.7,
+              transition: 'opacity 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.opacity = '1'}
+            onMouseOut={(e) => e.target.style.opacity = '0.7'}
+            title="Dismiss alert"
+          >
+            ×
+          </button>
+        </div>
+        <div
+          style={{
+            width: '100%',
+            height: '3px',
+            background: 'rgba(255, 255, 255, 0.3)',
+            borderRadius: '2px',
+            marginTop: '10px',
+            position: 'relative',
+            overflow: 'hidden',
+            cursor: 'pointer'
+          }}
+          onClick={() => {
+            setShowAlert(false);
+            onNavigateToRestock();
+          }}
+        >
+          <div
+            style={{
+              height: '100%',
+              background: 'white',
+              borderRadius: '2px',
+              animation: 'progressBar 30s linear infinite'
+            }}
+          />
+        </div>
+        <style>
+          {`
+            @keyframes progressBar {
+              from { width: 100%; }
+              to { width: 0%; }
+            }
+          `}
+        </style>
+      </div>
+    </>
+  );
+}
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -13,6 +156,10 @@ export default function Admin() {
 
   const role = localStorage.getItem("role");
   const [active, setActive] = useState("menu");
+
+  const handleNavigateToRestock = useCallback(() => {
+    setActive('restock');
+  }, []);
 
   if (role !== "admin") {
     return (
@@ -35,11 +182,10 @@ export default function Admin() {
       </div>
     );
 
-    if (active === 'upload') return (
+    if (active === 'orders') return (
       <div style={{ background: "rgba(255,255,255,0.95)", borderRadius: "15px", padding: "30px", boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}>
         <button onClick={() => setActive('menu')} style={{ padding: "8px 15px", background: "#95a5a6", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", marginBottom: "20px" }}>← Back to Menu</button>
-        <h2 style={{ color: "#2c3e50", marginBottom: "20px", textAlign: "center" }}>📷 Upload Beer Image</h2>
-        <UploadImageForm />
+        <PlaceOrder />
       </div>
     );
 
@@ -76,7 +222,7 @@ export default function Admin() {
           <button onClick={() => setActive('inventory')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #3498db, #2980b9)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>📦 Update Inventory</button>
           <button onClick={() => setActive('restock')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #e67e22, #d35400)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>🔄 Check Restock</button>
           <button onClick={() => setActive('employees')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #9b59b6, #8e44ad)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>👥 Company Records</button>
-          <button onClick={() => setActive('upload')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #16a085, #1abc9c)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>📷 Upload Beer Image</button>
+          <button onClick={() => setActive('orders')} style={{ padding: "20px 30px", background: "linear-gradient(45deg, #34495e, #2c3e50)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", minWidth: "200px" }}>📦 Place Order</button>
         </div>
       </div>
     );
@@ -84,6 +230,7 @@ export default function Admin() {
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px", background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+      <RestockAlert onNavigateToRestock={handleNavigateToRestock} />
       {renderContent()}
       <div style={{ textAlign: "center", marginTop: "30px" }}>
         <button onClick={logout} style={{ padding: "12px 25px", background: "linear-gradient(45deg, #e74c3c, #c0392b)", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "1rem" }}>🚪 Logout</button>

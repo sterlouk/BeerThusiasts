@@ -22,6 +22,7 @@ window.TowerGame = (option = {}) => {
     height,
     soundOn
   })
+  // eslint-disable-next-line no-unused-vars
   const pathGenerator = (path) => `./assets/${path}`
 
   // game.addImg('background', pathGenerator('background.png'))
