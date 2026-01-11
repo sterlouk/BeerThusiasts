@@ -194,16 +194,15 @@ export const getOrderDetails = async (req, res) => {
   try {
     let sql = `
       SELECT oh.line_number, oh.beer_id, b.name as beer_name, oh.quantity, oh.price_per_unit, oh.line_total,
-             ph.pub_id, p.name as pub_name
+             o.pub_id, p.name as pub_name
       FROM orderhasbeer oh
       JOIN beer b ON oh.beer_id = b.beer_id
-      LEFT JOIN pubhasbeer ph ON oh.beer_id = ph.beer_id AND ph.pub_id = ?
-      LEFT JOIN pub p ON ph.pub_id = p.pub_id
+      JOIN orders o ON oh.order_id = o.order_id
+      LEFT JOIN pub p ON o.pub_id = p.pub_id
       WHERE oh.order_id = ?
       ORDER BY oh.line_number
     `;
-    const params = pub_id ? [pub_id, orderId] : [null, orderId];
-    const [rows] = await pool.query(sql, params);
+    const [rows] = await pool.query(sql, [orderId]);
     res.json(rows);
   } catch (err) {
     console.error(err);

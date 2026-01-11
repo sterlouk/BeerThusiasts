@@ -90,29 +90,39 @@ INSERT INTO customer (customer_id, registration_date, loyalty_points, email, pho
 
 -- Dummy data for pub table
 INSERT INTO pub (pub_id, name, manager_name, phone, street, city, postal_code, country) VALUES
-(1, 'Pub Thessaloniki', 'Maria Papadopoulou', '+302310123456', 'Tsimiski 12', 'Thessaloniki', '54621', 'Greece'),
-(2, 'Pub Athens', 'Giorgos Nikolaou', '+302103334455', 'Ermou 45', 'Athens', '10563', 'Greece'),
-(3, 'Pub Patras', 'Dimitris Ioannou', '+302610223344', 'Korinthou 50', 'Patras', '26221', 'Greece'),
-(4, 'Pub Heraklion', 'Eleni Georgiou', '+302810334455', 'Kalokairinou 20', 'Heraklion', '71202', 'Greece'),
-(5, 'Pub Larissa', 'Kostas Papanikolaou', '+302410445566', 'Kountouriotou 15', 'Larissa', '41222', 'Greece'),
-(6, 'Pub Volos', 'Anna Karagianni', '+302421556677', 'Dimokratias 30', 'Volos', '38221', 'Greece'),
-(7, 'Pub Ioannina', 'Nikos Christou', '+302651667788', 'Averof 10', 'Ioannina', '45221', 'Greece'),
-(8, 'Pub Kavala', 'Sofia Dimitriou', '+302510778899', 'Venizelou 5', 'Kavala', '65201', 'Greece'),
-(9, 'Pub Rhodes', 'Manolis Antoniou', '+302241889900', 'Sokratous 100', 'Rhodes', '85100', 'Greece'),
-(10, 'Pub Chania', 'Maria Kalogeraki', '+302821990011', 'Halidon 25', 'Chania', '73131', 'Greece');
+(1, 'The Crown & Anchor', 'Maria Papadopoulou', '+302310123456', 'Tsimiski 12', 'Thessaloniki', '54621', 'Greece'),
+(2, 'The Old Brewery House', 'Giorgos Nikolaou', '+302103334455', 'Ermou 45', 'Athens', '10563', 'Greece'),
+(3, 'The Kings Arms', 'Dimitris Ioannou', '+302610223344', 'Korinthou 50', 'Patras', '26221', 'Greece'),
+(4, 'The Bell Inn', 'Eleni Georgiou', '+302810334455', 'Kalokairinou 20', 'Heraklion', '71202', 'Greece'),
+(5, 'The Plough & Harrow', 'Kostas Papanikolaou', '+302410445566', 'Kountouriotou 15', 'Larissa', '41222', 'Greece'),
+(6, 'The Red Lion', 'Anna Karagianni', '+302421556677', 'Dimokratias 30', 'Volos', '38221', 'Greece'),
+(7, 'The George & Dragon', 'Nikos Christou', '+302651667788', 'Averof 10', 'Ioannina', '45221', 'Greece'),
+(8, 'The Royal Oak', 'Sofia Dimitriou', '+302510778899', 'Venizelou 5', 'Kavala', '65201', 'Greece'),
+(9, 'The Three Tuns', 'Manolis Antoniou', '+302241889900', 'Sokratous 100', 'Rhodes', '85100', 'Greece'),
+(10, 'The Greyhound Inn', 'Maria Kalogeraki', '+302821990011', 'Halidon 25', 'Chania', '73131', 'Greece');
 
 -- Dummy data for employee table
 INSERT INTO employee (employee_id, hire_date, salary, email, shift, position, phone, first_name, last_name, pub_id) VALUES
-(1, '2020-05-01', 1200.00, 'bartender1@pub.gr', 'evening', 'bartender', '+302310111111', 'Nikos', 'Papadopoulos', 1),
-(2, '2021-03-15', 2000.00, 'manager1@pub.gr', 'morning', 'manager', '+302103333333', 'Eleni', 'Kosta', 2),
-(3, '2022-07-10', 950.00, 'waiter1@pub.gr', 'night', 'waiter', '+302610222222', 'Dimitris', 'Ioannou', 3),
-(4, '2019-11-20', 1100.00, 'bartender2@pub.gr', 'evening', 'bartender', '+302810333333', 'Maria', 'Georgiou', 4),
-(5, '2023-01-05', 1300.00, 'cleaner1@pub.gr', 'morning', 'cleaner', '+302410444444', 'Kostas', 'Papanikolaou', 5),
-(6, '2020-09-12', 1400.00, 'manager2@pub.gr', 'morning', 'manager', '+302421555555', 'Anna', 'Karagianni', 6),
-(7, '2021-04-18', 1000.00, 'waiter2@pub.gr', 'night', 'waiter', '+302651666666', 'Nikos', 'Christou', 7),
-(8, '2018-06-25', 1250.00, 'bartender3@pub.gr', 'evening', 'bartender', '+302510777777', 'Sofia', 'Dimitriou', 8),
-(9, '2022-02-14', 1350.00, 'manager3@pub.gr', 'morning', 'manager', '+302241888888', 'Manolis', 'Antoniou', 9),
-(10, '2019-08-30', 900.00, 'cleaner2@pub.gr', 'night', 'cleaner', '+302821999999', 'Maria', 'Kalogeraki', 10);
+(1, '2020-05-01', 1200.00, 'bartender1@pub.com', 'evening', 'bartender', '+302310111111', 'James', 'Thompson', 1),
+(2, '2021-03-15', 2000.00, 'manager1@pub.com', 'morning', 'manager', '+302103333333', 'Sarah', 'Wilson', 2),
+(3, '2022-07-10', 950.00, 'waiter1@pub.com', 'night', 'waiter', '+302610222222', 'Michael', 'Davies', 3),
+(4, '2019-11-20', 1100.00, 'bartender2@pub.com', 'evening', 'bartender', '+302810333333', 'Emma', 'Bennett', 4),
+(5, '2023-01-05', 1300.00, 'cleaner1@pub.com', 'morning', 'cleaner', '+302410444444', 'Robert', 'Cooper', 5),
+(6, '2020-09-12', 1400.00, 'manager2@pub.com', 'morning', 'manager', '+302421555555', 'Jessica', 'Miller', 6),
+(7, '2021-04-18', 1000.00, 'waiter2@pub.com', 'night', 'waiter', '+302651666666', 'Daniel', 'Taylor', 7),
+(8, '2018-06-25', 1250.00, 'bartender3@pub.com', 'evening', 'bartender', '+302510777777', 'Victoria', 'Harris', 8),
+(9, '2022-02-14', 1350.00, 'manager3@pub.com', 'morning', 'manager', '+302241888888', 'Christopher', 'Clark', 9),
+(10, '2019-08-30', 900.00, 'cleaner2@pub.com', 'night', 'cleaner', '+302821999999', 'Rachel', 'Martin', 10),
+(11, '2020-02-07', 1150.00, 'bartender4@pub.com', 'evening', 'bartender', '+302310111112', 'Thomas', 'Anderson', 1),
+(12, '2021-11-15', 950.00, 'waiter3@pub.com', 'night', 'waiter', '+302103333334', 'Laura', 'Lewis', 2),
+(13, '2023-03-22', 1100.00, 'bartender5@pub.com', 'evening', 'bartender', '+302610222223', 'William', 'White', 3),
+(14, '2020-07-09', 1050.00, 'waiter4@pub.com', 'morning', 'waiter', '+302810333334', 'Amanda', 'Jackson', 4),
+(15, '2022-06-20', 1200.00, 'bartender6@pub.com', 'evening', 'bartender', '+302410444445', 'Edward', 'Robinson', 5),
+(16, '2021-08-11', 950.00, 'waiter5@pub.com', 'morning', 'waiter', '+302421555556', 'Michelle', 'Garcia', 6),
+(17, '2019-12-03', 1250.00, 'bartender7@pub.com', 'evening', 'bartender', '+302651666667', 'David', 'Martinez', 7),
+(18, '2023-05-14', 1000.00, 'waiter6@pub.com', 'night', 'waiter', '+302510777778', 'Elizabeth', 'Rodriguez', 8),
+(19, '2020-10-28', 1150.00, 'bartender8@pub.com', 'evening', 'bartender', '+302241888889', 'Joseph', 'Brown', 9),
+(20, '2022-01-19', 950.00, 'waiter7@pub.com', 'morning', 'waiter', '+302821999990', 'Patricia', 'Green', 10);
 
 -- Dummy data for customerreviewsbeer table
 INSERT INTO customerreviewsbeer (beer_id, customer_id, comment, review_date, rating) VALUES
@@ -210,7 +220,37 @@ INSERT INTO orderhasbeer (order_id, beer_id, line_number, quantity, price_per_un
 (19, 4, 1, 2, 2.80, 5.60),
 (19, 7, 2, 1, 3.00, 3.00),
 (20, 10, 1, 1, 3.00, 3.00),
-(20, 11, 2, 2, 3.80, 7.60);
+(20, 11, 2, 2, 3.80, 7.60),
+(1, 5, 3, 2, 2.50, 5.00),
+(2, 6, 2, 1, 2.70, 2.70),
+(3, 9, 2, 2, 3.20, 6.40),
+(5, 2, 2, 1, 3.00, 3.00),
+(5, 8, 3, 2, 2.90, 5.80),
+(6, 3, 2, 1, 2.50, 2.50),
+(8, 12, 3, 1, 4.50, 4.50),
+(9, 1, 4, 2, 3.50, 7.00),
+(9, 2, 4, 1, 3.00, 3.00),
+(10, 13, 4, 1, 4.80, 4.80),
+(11, 7, 4, 1, 3.00, 3.00),
+(11, 9, 5, 2, 3.20, 6.40),
+(12, 5, 2, 2, 2.50, 5.00),
+(13, 6, 4, 1, 2.70, 2.70),
+(14, 2, 3, 2, 3.00, 6.00),
+(14, 5, 4, 1, 2.50, 2.50),
+(15, 9, 3, 2, 3.20, 6.40),
+(16, 4, 2, 2, 2.80, 5.60),
+(16, 6, 3, 1, 2.70, 2.70),
+(17, 11, 3, 1, 3.80, 3.80),
+(18, 6, 3, 2, 2.70, 5.40),
+(19, 9, 3, 1, 3.20, 3.20),
+(20, 13, 3, 2, 4.80, 9.60),
+(1, 14, 4, 1, 5.20, 5.20),
+(2, 15, 3, 2, 5.50, 11.00),
+(3, 16, 3, 1, 6.00, 6.00),
+(5, 17, 2, 1, 3.50, 3.50),
+(6, 18, 3, 2, 2.50, 5.00),
+(8, 19, 2, 1, 4.00, 4.00),
+(11, 20, 6, 1, 4.20, 4.20);
 
 -- Dummy data for pubhasbeer table
 INSERT INTO pubhasbeer (pub_id, beer_id, quantity_available, last_updated, reorder_threshold, storage_location) VALUES
