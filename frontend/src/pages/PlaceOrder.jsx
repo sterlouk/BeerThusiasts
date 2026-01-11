@@ -111,7 +111,7 @@ export default function PlaceOrder() {
       case 1:
         return (
           <div>
-            <h3 style={{ color: "#2c3e50", marginBottom: "20px" }}>� Select Pub to Order For</h3>
+            <h3 style={{ color: "#2c3e50", marginBottom: "20px" }}>🏪 Select Pub to Order For</h3>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "15px", maxHeight: "400px", overflowY: "auto" }}>
               {pubs.map((pub) => (
                 <div
@@ -232,7 +232,7 @@ export default function PlaceOrder() {
       case 3:
         return (
           <div>
-            <h3 style={{ color: "#2c3e50", marginBottom: "20px" }}>🏭 Select Supplier for {selectedBeer?.name}</h3>
+            <h3 style={{ color: "#2c3e50", marginBottom: "20px" }}>🏭 Select Supplier {selectedBeer?.name}</h3>
             {suppliers.length === 0 ? (
               <div style={{ textAlign: "center", padding: "20px", color: "#7f8c8d" }}>
                 Loading suppliers...
