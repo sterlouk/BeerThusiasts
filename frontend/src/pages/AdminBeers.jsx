@@ -44,7 +44,10 @@ export default function AdminBeers() {
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px", background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
       <h1 style={{ textAlign: "center", color: "#2c3e50", marginBottom: "30px" }}>🍺 Manage Beers</h1>
-      <button onClick={() => navigate('/admin')} style={{ padding: "10px 20px", background: "#95a5a6", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", marginBottom: "20px" }}>← Back to Admin</button>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
+        <button onClick={() => navigate('/admin')} style={{ padding: "10px 20px", background: "#95a5a6", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>← Back to Admin</button>
+        <button onClick={() => navigate('/beers/new')} style={{ padding: "10px 20px", background: "linear-gradient(45deg, #27ae60, #229954)", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}>➕ Add New Beer</button>
+      </div>
       <div style={{ background: "white", borderRadius: "10px", overflow: "hidden", boxShadow: "0 4px 15px rgba(0,0,0,0.1)" }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>

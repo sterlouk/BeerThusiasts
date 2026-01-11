@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchSupplierOrders, updateSupplierOrder } from "../api/beer";
 
 export default function AdminSupplierOrders() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -127,7 +129,22 @@ export default function AdminSupplierOrders() {
           />
         </div>
 
-        <div style={{ alignSelf: "flex-end" }}>
+        <div style={{ alignSelf: "flex-end", display: "flex", gap: "10px" }}>
+          <button
+            onClick={() => navigate('/place-order')}
+            style={{
+              padding: "8px 16px",
+              background: "linear-gradient(45deg, #27ae60, #229954)",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "1rem",
+              fontWeight: "bold"
+            }}
+          >
+            ➕ Place Order
+          </button>
           <button
             onClick={loadOrders}
             style={{
