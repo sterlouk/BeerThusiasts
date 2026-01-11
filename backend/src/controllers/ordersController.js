@@ -84,8 +84,28 @@ export const postOrder = async (req, res) => {
       );
     }
 
+    // Calculate and update loyalty points: total * 10, rounded up
+    const loyaltyPointsToAdd = Math.ceil(total * 10);
+    await conn.query(
+      `UPDATE customer SET loyalty_points = loyalty_points + ? WHERE customer_id = ?`,
+      [loyaltyPointsToAdd, customer_id]
+    );
+
+    // Get current loyalty points after update
+    const [[customerData]] = await conn.query(
+      `SELECT loyalty_points FROM customer WHERE customer_id = ?`,
+      [customer_id]
+    );
+    const currentLoyaltyPoints = customerData?.loyalty_points || 0;
+
     await conn.commit();
-    res.status(201).json({ order_id: orderId, total_amount: total, pub_id: pub_id || null });
+    res.status(201).json({ 
+      order_id: orderId, 
+      total_amount: total, 
+      pub_id: pub_id || null, 
+      loyalty_points_added: loyaltyPointsToAdd,
+      current_loyalty_points: currentLoyaltyPoints
+    });
   } catch (err) {
     console.error(err);
     try {
