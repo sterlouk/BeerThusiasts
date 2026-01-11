@@ -11,10 +11,12 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [orderData, setOrderData] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage(null);
     if (!customerId || !pubId) return alert("Please provide both Customer ID and Pub ID");
     if (items.length === 0) return alert("Your cart is empty");
 
@@ -37,14 +39,16 @@ export default function Checkout() {
         items: [...items],
         customerId: customerId,
         pubId: pubId,
-        paymentMethod: paymentMethod
+        paymentMethod: paymentMethod,
+        loyaltyPointsAdded: res.loyalty_points_added,
+        currentLoyaltyPoints: res.current_loyalty_points
       });
 
       clear();
       setShowReceipt(true);
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to create order: " + (err.message || "Unknown error"));
+      setErrorMessage(err.message || "Unknown error occurred");
     } finally {
       setLoading(false);
     }
@@ -56,7 +60,22 @@ export default function Checkout() {
   };
 
   return (
-    <div style={{
+    <>
+      <style>
+        {`
+          @keyframes slideDown {
+            from {
+              transform: translateY(-20px);
+              opacity: 0;
+            }
+            to {
+              transform: translateY(0);
+              opacity: 1;
+            }
+          }
+        `}
+      </style>
+      <div style={{
       maxWidth: "1000px",
       margin: "0 auto",
       padding: "20px",
@@ -78,6 +97,48 @@ export default function Checkout() {
         }}>
           🛍️ Checkout
         </h1>
+
+        {errorMessage && (
+          <div style={{
+            background: "linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)",
+            color: "white",
+            padding: "20px",
+            borderRadius: "10px",
+            marginBottom: "20px",
+            boxShadow: "0 4px 15px rgba(231, 76, 60, 0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: "15px",
+            animation: "slideDown 0.3s ease-out"
+          }}>
+            <div style={{ fontSize: "2rem" }}>⚠️</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: "bold", fontSize: "1.2rem", marginBottom: "5px" }}>
+                Order Failed
+              </div>
+              <div style={{ fontSize: "1rem" }}>
+                {errorMessage}
+              </div>
+            </div>
+            <button
+              onClick={() => setErrorMessage(null)}
+              style={{
+                background: "rgba(255, 255, 255, 0.2)",
+                border: "2px solid white",
+                color: "white",
+                padding: "8px 15px",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                transition: "all 0.2s"
+              }}
+              onMouseOver={(e) => e.target.style.background = "rgba(255, 255, 255, 0.3)"}
+              onMouseOut={(e) => e.target.style.background = "rgba(255, 255, 255, 0.2)"}
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         <div style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
           {/* Order Summary */}
@@ -224,7 +285,8 @@ export default function Checkout() {
                 >
                   <option value="cash">💵 Cash</option>
                   <option value="card">💳 Card</option>
-                  <option value="digital">📱 Digital Wallet</option>
+                  <option value="bank_transaction">📱 Digital Wallet</option>
+                  <option value="check">📝 Check</option>
                 </select>
               </div>
 
@@ -362,7 +424,9 @@ export default function Checkout() {
                 <span style={{ color: "#7f8c8d" }}>Payment:</span>
                 <span style={{ fontWeight: "bold", color: "#2c3e50" }}>
                   {orderData.paymentMethod === "cash" ? "💵 Cash" :
-                   orderData.paymentMethod === "card" ? "💳 Card" : "📱 Digital"}
+                   orderData.paymentMethod === "card" ? "💳 Card" :
+                   orderData.paymentMethod === "bank_transaction" ? "📱 Digital Wallet" :
+                   orderData.paymentMethod === "check" ? "📝 Check" : orderData.paymentMethod}
                 </span>
               </div>
             </div>
@@ -421,6 +485,27 @@ export default function Checkout() {
               <span>TOTAL:</span>
               <span style={{ color: "#e74c3c" }}>€{Number(orderData.total).toFixed(2)}</span>
             </div>
+
+            {/* Loyalty Points */}
+            {orderData.loyaltyPointsAdded && (
+              <div style={{
+                background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                padding: "20px",
+                borderRadius: "10px",
+                marginBottom: "20px",
+                textAlign: "center",
+                color: "white",
+                boxShadow: "0 4px 15px rgba(245, 87, 108, 0.3)"
+              }}>
+                <div style={{ fontSize: "2rem", marginBottom: "8px" }}>🎁</div>
+                <div style={{ fontSize: "1.1rem", fontWeight: "bold", marginBottom: "8px" }}>
+                  Congratulations! You earned {orderData.loyaltyPointsAdded} points! 🎉
+                </div>
+                <div style={{ fontSize: "0.95rem", opacity: 0.95 }}>
+                  Your total loyalty points: <strong>{orderData.currentLoyaltyPoints}</strong> points
+                </div>
+              </div>
+            )}
 
             {/* Pickup Info */}
             <div style={{
@@ -504,5 +589,6 @@ export default function Checkout() {
         }
       `}</style>
     </div>
+    </>
   );
 }
