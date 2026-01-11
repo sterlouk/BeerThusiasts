@@ -75,7 +75,7 @@ export default function Checkout() {
           }
         `}
       </style>
-      <div style={{
+      <div className="page-transition" style={{
       maxWidth: "1000px",
       margin: "0 auto",
       padding: "20px",

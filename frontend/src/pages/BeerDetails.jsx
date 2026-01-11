@@ -46,7 +46,7 @@ export default function BeerDetails() {
 
   if (isCreate) {
     return (
-      <div style={{
+      <div className="page-transition" style={{
         maxWidth: "800px",
         margin: "0 auto",
         padding: "20px",
@@ -75,7 +75,7 @@ export default function BeerDetails() {
   );
 
   return (
-    <div style={{
+    <div className="page-transition" style={{
       maxWidth: "800px",
       margin: "0 auto",
       padding: "20px",

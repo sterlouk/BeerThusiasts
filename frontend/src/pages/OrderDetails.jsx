@@ -44,7 +44,7 @@ export default function OrderDetails() {
   );
 
   return (
-    <div style={{
+    <div className="page-transition" style={{
       maxWidth: "1000px",
       margin: "0 auto",
       padding: "20px",
