@@ -42,7 +42,7 @@ export default function AdminBeers() {
   if (loading) return <div style={{ textAlign: "center", padding: "50px" }}>Loading...</div>;
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px", background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="page-transition" style={{ maxWidth: "800px", margin: "0 auto", padding: "20px", background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
       <h1 style={{ textAlign: "center", color: "#2c3e50", marginBottom: "30px" }}>🍺 Manage Beers</h1>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
         <button onClick={() => navigate('/admin')} style={{ padding: "10px 20px", background: "#95a5a6", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>← Back to Admin</button>

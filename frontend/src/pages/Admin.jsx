@@ -256,7 +256,7 @@ export default function Admin() {
   };
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px", background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="page-transition" style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px", background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
       <RestockAlert onNavigateToRestock={handleNavigateToRestock} />
       {renderContent()}
       <div style={{ textAlign: "center", marginTop: "30px" }}>
