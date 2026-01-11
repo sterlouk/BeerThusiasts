@@ -36,23 +36,45 @@ export default function BeerCard({ beer }) {
       height: "fit-content"
     }}
     onMouseOver={(e) => {
-      e.target.closest('.beer-card-container').style.transform = "translateY(-5px)";
-      e.target.closest('.beer-card-container').style.boxShadow = "0 8px 25px rgba(0,0,0,0.15)";
+      const card = e.target.closest('.beer-card-container');
+      card.style.transform = "translateY(-5px)";
+      card.style.boxShadow = "0 8px 30px rgba(52, 152, 219, 0.15), 0 0 20px rgba(52, 152, 219, 0.1)";
+      card.style.borderColor = "#3498db";
     }}
     onMouseOut={(e) => {
-      e.target.closest('.beer-card-container').style.transform = "translateY(0)";
-      e.target.closest('.beer-card-container').style.boxShadow = "0 4px 15px rgba(0,0,0,0.1)";
+      const card = e.target.closest('.beer-card-container');
+      card.style.transform = "translateY(0)";
+      card.style.boxShadow = "0 4px 15px rgba(0,0,0,0.1)";
+      card.style.borderColor = "#ecf0f1";
     }}
     className="beer-card-container"
     >
       {/* Beer Image */}
-      <div style={{ textAlign: "center", marginBottom: "15px", height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ 
+        textAlign: "center", 
+        marginBottom: "15px", 
+        height: '120px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        overflow: 'hidden',
+        borderRadius: '8px'
+      }}>
         {!failedImage ? (
           <img
             src={`${API_BASE}/images/beers/${beer.beer_id}.jpg`}
             alt={beer.beer_name}
             onError={() => setFailedImage(true)}
-            style={{ maxWidth: '160px', maxHeight: '120px', objectFit: 'cover', borderRadius: '8px' }}
+            style={{ 
+              maxWidth: '160px', 
+              maxHeight: '120px', 
+              objectFit: 'cover', 
+              borderRadius: '8px',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer'
+            }}
+            onMouseOver={(e) => e.target.style.transform = 'scale(1.15)'}
+            onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
           />
         ) : (
           <div style={{ fontSize: '3rem' }}>🍺</div>
