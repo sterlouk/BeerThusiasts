@@ -10,6 +10,50 @@ export const getPubs = async (req, res) => {
   }
 };
 
+export const createPub = async (req, res) => {
+  const { name, manager_name, phone, street, city, postal_code, country } = req.body;
+  
+  if (!name) {
+    return res.status(400).json({ error: "Pub name is required" });
+  }
+
+  try {
+    const [result] = await pool.query(
+      `INSERT INTO pub (name, manager_name, phone, street, city, postal_code, country) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [name, manager_name || null, phone || null, street || null, city || null, postal_code || null, country || null]
+    );
+    res.status(201).json({ pub_id: result.insertId, name, manager_name, phone, street, city, postal_code, country });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
+  }
+};
+
+export const updatePub = async (req, res) => {
+  const pubId = req.params.id;
+  const { name, manager_name, phone, street, city, postal_code, country } = req.body;
+  
+  if (!name) {
+    return res.status(400).json({ error: "Pub name is required" });
+  }
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE pub SET name = ?, manager_name = ?, phone = ?, street = ?, city = ?, postal_code = ?, country = ? WHERE pub_id = ?`,
+      [name, manager_name || null, phone || null, street || null, city || null, postal_code || null, country || null, pubId]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Pub not found" });
+    }
+    
+    res.json({ pub_id: Number(pubId), name, manager_name, phone, street, city, postal_code, country });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
+  }
+};
+
 export const getPubsNeedsRestock = async (req, res) => {
   try {
     const [[{ dbName }]] = await pool.query(`SELECT DATABASE() AS dbName`);

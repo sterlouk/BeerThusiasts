@@ -115,6 +115,81 @@ export const updateBeer = async (req, res) => {
   }
 };
 
+// Get all inventory entries (pubhasbeer)
+export const getAllInventory = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        phb.pub_id,
+        phb.beer_id,
+        phb.quantity_available,
+        phb.reorder_threshold,
+        phb.storage_location,
+        phb.last_updated,
+        phb.remaining_until_reorder,
+        p.name AS pub_name,
+        b.name AS beer_name
+      FROM pubhasbeer phb
+      JOIN pub p ON phb.pub_id = p.pub_id
+      JOIN beer b ON phb.beer_id = b.beer_id
+      ORDER BY p.name, b.name
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error("getAllInventory error", err);
+    res.status(500).json({ error: "Database error" });
+  }
+};
+
+// Update pubhasbeer entry
+export const updateInventory = async (req, res) => {
+  const { pub_id, beer_id } = req.params;
+  const { quantity_available, reorder_threshold, storage_location } = req.body;
+  
+  if (!pub_id || !beer_id) {
+    return res.status(400).json({ error: "pub_id and beer_id required" });
+  }
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE pubhasbeer 
+       SET quantity_available = ?, 
+           reorder_threshold = ?, 
+           storage_location = ?,
+           last_updated = NOW()
+       WHERE pub_id = ? AND beer_id = ?`,
+      [quantity_available || 0, reorder_threshold || null, storage_location || null, pub_id, beer_id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Inventory entry not found" });
+    }
+
+    // Return updated entry with names
+    const [[updated]] = await pool.query(`
+      SELECT 
+        phb.pub_id,
+        phb.beer_id,
+        phb.quantity_available,
+        phb.reorder_threshold,
+        phb.storage_location,
+        phb.last_updated,
+        phb.remaining_until_reorder,
+        p.name AS pub_name,
+        b.name AS beer_name
+      FROM pubhasbeer phb
+      JOIN pub p ON phb.pub_id = p.pub_id
+      JOIN beer b ON phb.beer_id = b.beer_id
+      WHERE phb.pub_id = ? AND phb.beer_id = ?
+    `, [pub_id, beer_id]);
+
+    res.json(updated);
+  } catch (err) {
+    console.error("updateInventory error", err);
+    res.status(500).json({ error: "Database error" });
+  }
+};
+
 // Upsert pubhasbeer row (create or update inventory for a beer at a pub)
 export const upsertPubHasBeer = async (req, res) => {
   const { pub_id, beer_id, quantity_available, reorder_threshold, storage_location, remaining_until_reorder } = req.body;

@@ -20,6 +20,32 @@ export const fetchPubs = async () => {
   return res.json();
 };
 
+export const createPub = async (pubData) => {
+  const res = await fetch(`${API_BASE}/api/pubs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pubData),
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || `API error ${res.status}`);
+  }
+  return res.json();
+};
+
+export const updatePub = async (pubId, pubData) => {
+  const res = await fetch(`${API_BASE}/api/pubs/${pubId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pubData),
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || `API error ${res.status}`);
+  }
+  return res.json();
+};
+
 export const fetchPubsNeedsRestock = async () => {
   const res = await fetch(`${API_BASE}/api/pubs/needs-restock`);
   if (!res.ok) throw new Error(`API error ${res.status}`);
@@ -128,6 +154,25 @@ export const deleteBeerAdmin = async (id) => {
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || `API error ${res.status}`);
+  }
+  return res.json();
+};
+
+export const fetchInventory = async () => {
+  const res = await fetch(`${API_BASE}/api/admin/inventory`);
+  if (!res.ok) throw new Error("Failed to fetch inventory");
+  return res.json();
+};
+
+export const updateInventory = async (pubId, beerId, data) => {
+  const res = await fetch(`${API_BASE}/api/admin/inventory/${pubId}/${beerId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(errData.error || "Failed to update inventory");
   }
   return res.json();
 };
