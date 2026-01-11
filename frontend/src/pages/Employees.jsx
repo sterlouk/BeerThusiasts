@@ -141,6 +141,7 @@ export default function Employees() {
 
   const totalSalary = employees.reduce((sum, emp) => sum + (Number(emp.salary) || 0), 0);
   const selectedPub = pubs.find(pub => Number(pub.pub_id) === Number(selectedPubId));
+  const selectedPubName = selectedPub?.name || selectedPubId;
 
   if (loading) return (
     <div style={{
@@ -193,7 +194,7 @@ export default function Employees() {
               fontSize: "1.1rem"
             }}>
               {selectedPubId
-                ? `Viewing employees for ${selectedPub?.pub_name || 'selected pub'} • Manage employee information and company directory`
+                ? `Viewing employees for ${selectedPubName} • Manage employee information and company directory`
                 : 'Manage employee information and company directory'
               }
             </p>
@@ -278,7 +279,7 @@ export default function Employees() {
             <div style={{ fontSize: "2rem", marginBottom: "5px" }}>👥</div>
             <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{employees.length}</div>
             <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>
-              {selectedPubId ? `Employees at ${selectedPub?.pub_name || 'Selected Pub'}` : 'Total Employees'}
+              {selectedPubId ? `Employees at ${selectedPubName}` : 'Total Employees'}
             </div>
           </div>
 
@@ -295,7 +296,7 @@ export default function Employees() {
             <div style={{ fontSize: "2rem", marginBottom: "5px" }}>💰</div>
             <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>${totalSalary.toLocaleString()}</div>
             <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>
-              {selectedPubId ? `Budget for ${selectedPub?.pub_name || 'Selected Pub'}` : 'Total Salary Budget'}
+              {selectedPubId ? `Budget for ${selectedPubName}` : 'Total Salary Budget'}
             </div>
           </div>
 
@@ -312,7 +313,7 @@ export default function Employees() {
             }}>
               <div style={{ fontSize: "2rem", marginBottom: "5px" }}>🏪</div>
               <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-                {selectedPub ? selectedPub.pub_name : `Pub ID: ${selectedPubId}`}
+                {selectedPubName}
               </div>
               <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>
                 Pub ID: {selectedPubId}
