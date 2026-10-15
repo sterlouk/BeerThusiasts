@@ -13,8 +13,13 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Only the configured frontend origin may call the API from a browser
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000")
+  .split(",")
+  .map((o) => o.trim());
+app.use(cors({ origin: allowedOrigins }));
+app.use(express.json({ limit: "100kb" }));
+app.disable("x-powered-by");
 
 app.use("/api/beers", beersRoutes);
 app.use("/api/brands", brandsRoutes);
@@ -26,12 +31,13 @@ app.use("/api/admin", adminRoutes);
 // Serve uploaded beer images from /images/beers
 app.use(
   "/images/beers",
-  express.static(path.join(process.cwd(), "public", "images", "beers"))
+  express.static(path.join(process.cwd(), "public", "images", "beers"), {
+    setHeaders: (res) => res.setHeader("X-Content-Type-Options", "nosniff"),
+  })
 );
 
-// Use a single fixed development port to avoid accidental collisions with system env vars.
-// This is intentionally hardcoded for development; change if necessary.
-const PORT = 5001;
+// API_PORT rather than PORT, to avoid collisions with a generic PORT env var
+const PORT = Number(process.env.API_PORT) || 5001;
 
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
