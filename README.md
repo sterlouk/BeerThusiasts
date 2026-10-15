@@ -18,9 +18,15 @@ A full-stack craft-beer platform with three user roles:
 
 ## Screenshots
 
-| Beer catalog with filters | Reviews and ratings |
+| **Customer:** catalog with filters | **Customer:** checkout |
 |---|---|
-| ![Beer catalog with search, type, country, brand and price filters](docs/screenshots/catalog.png) | ![Customer reviews and review form](docs/screenshots/reviews.png) |
+| ![Beer catalog with search, type, country, brand and price filters](docs/screenshots/catalog.png) | ![Checkout with order summary and payment method](docs/screenshots/checkout.png) |
+| **Customer:** reviews and ratings | **Service:** order processing |
+| ![Customer reviews and review form](docs/screenshots/reviews.png) | ![Service orders table with pub and status filters](docs/screenshots/service-orders.png) |
+
+**Admin:** employee records
+
+![Admin employee directory with salary totals and CRUD actions](docs/screenshots/admin-employees.png)
 
 ## Features
 
