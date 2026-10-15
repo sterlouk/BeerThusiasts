@@ -1,181 +1,139 @@
-# 🍺 BeerDB - Beer Enthusiasts Application
+# BeerThusiasts
 
-A full-stack web application for beer enthusiasts to browse, review, and order craft beers. Built with React, Node.js, Express, and MySQL.
+A full-stack craft-beer platform with three user roles:
 
-## 🚀 Quick Start
+- **Customers** browse, review and order beers.
+- **Service staff** process orders against each pub's inventory.
+- **Admins** manage the catalog, pubs, employees, stock and supplier orders.
 
-The easiest way to get the entire application running is with our automated setup script:
+**Stack:** React 19 · Node.js / Express · MySQL 8
+
+> 🔐 **Security review:** I audited this project after building it, then fixed a path-traversal file-write bug, removed committed credentials, and cleared 9 vulnerable dependencies. Open design gaps are documented too. See **[SECURITY.md](SECURITY.md)**.
+
+<p align="center">
+  <img src="docs/screenshots/home.png" alt="Home page with role picker" width="420">
+</p>
+
+---
+
+## Screenshots
+
+| **Customer:** catalog with filters | **Customer:** checkout |
+|---|---|
+| ![Beer catalog with search, type, country, brand and price filters](docs/screenshots/catalog.png) | ![Checkout with order summary and payment method](docs/screenshots/checkout.png) |
+| **Customer:** reviews and ratings | **Service:** order processing |
+| ![Customer reviews and review form](docs/screenshots/reviews.png) | ![Service orders table with pub and status filters](docs/screenshots/service-orders.png) |
+
+**Admin:** employee records
+
+![Admin employee directory with salary totals and CRUD actions](docs/screenshots/admin-employees.png)
+
+## Features
+
+| Role | What it can do |
+|------|----------------|
+| **Customer** | Search and filter the catalog (brand, style, country, ABV, price) · beer detail pages · ratings and reviews · cart and checkout · loyalty points on every order |
+| **Service** | View and filter orders per pub · line-item detail · complete or cancel orders, which updates pub inventory transactionally |
+| **Admin** | Create and edit beers, with image upload · manage pubs and employees · inventory with reorder thresholds and a "needs restock" view · find suppliers for a brand and place supplier orders |
+
+There's also a small tower-stacking mini-game in the **Playroom**.
+
+## Architecture
+
+```
+React SPA (:3000)  ──fetch/JSON──▶  Express API (:5001)  ──mysql2 pool──▶  MySQL 8
+  pages/ components/                 routes/ → controllers/                 12 tables, 10 views
+  CartContext (localStorage)         /images/beers (static uploads)
+```
+
+- **API:** about 30 REST endpoints across `/api/beers`, `/brands`, `/reviews`, `/orders`, `/pubs` and `/admin`. All queries are parameterized.
+- **Transactions:** order placement, order-status changes (with inventory adjustment) and supplier orders run inside MySQL transactions, using row locks (`SELECT ... FOR UPDATE`) where needed.
+- **Schema** ([`dbDump.sql`](dbDump.sql)):
+  - 12 tables with 14 foreign keys.
+  - `CHECK` constraints, for example rating 0–5.
+  - A generated column, `remaining_until_reorder`.
+  - 10 views, for example `pubsneedrestock` and `positivebeerreviews`.
+
+## Getting started
+
+**Prerequisites:** Node.js 18+, and MySQL 8 running locally.
+
+### Option A: one command (Windows / PowerShell)
 
 ```powershell
 .\setup-and-launch.ps1
 ```
 
-This single command will:
-1. ✅ Shut down any running Node.js servers
-2. ✅ Install backend dependencies (if not already installed)
-3. ✅ Initialize and populate the MySQL database with sample data
-4. ✅ Install frontend dependencies (if not already installed)
-5. ✅ Launch the backend API server on `http://localhost:5001`
-6. ✅ Launch the frontend React app on `http://localhost:3000`
+On the first run, the script creates `backend/.env` from the template and stops. Set `DB_PASSWORD` in that file, then run the script again. It then:
 
-Both servers will open in separate terminal windows. Simply close them to stop the servers.
+1. Installs dependencies.
+2. Rebuilds the database with sample data.
+3. Starts the API on <http://localhost:5001> and the app on <http://localhost:3000>.
 
-## 📋 Prerequisites
+> ⚠️ The script stops **all** running `node` processes before it starts the servers.
 
-Before running the application, ensure you have:
+### Option B: manual
 
-- **Node.js** (v16 or higher recommended)
-- **MySQL Server** running and accessible
-- **PowerShell** (Windows) or similar shell environment
+```bash
+# 1. Backend
+cd backend
+cp .env.example .env        # then edit DB_PASSWORD
+npm install
+node reset_db.js            # creates the `beerthusiasts` schema and loads sample data
+npm start                   # http://localhost:5001
 
-## 🛠️ Manual Setup
-
-If you prefer to set up components individually:
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-   ```powershell
-   cd backend
-   ```
-
-2. Create a `.env` file with your database credentials:
-   ```
-   DB_HOST=127.0.0.1
-   DB_USER=root
-   DB_PASSWORD=your_password
-   DB_NAME=beersthuasiasts
-   ```
-
-3. Install dependencies:
-   ```powershell
-   npm install
-   ```
-
-4. Initialize the database:
-   ```powershell
-   node reset_db.js
-   ```
-
-5. Start the backend server:
-   ```powershell
-   npm start
-   ```
-
-The backend API will be available at `http://localhost:5001`
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```powershell
-   cd frontend
-   ```
-
-2. (Optional) Create a `.env` file to configure the API endpoint:
-   ```
-   REACT_APP_API_BASE=http://localhost:5001
-   ```
-
-3. Install dependencies:
-   ```powershell
-   npm install
-   ```
-
-4. Start the development server:
-   ```powershell
-   npm start
-   ```
-
-The React app will open at `http://localhost:3000`
-
-### Production Build
-
-To create a production build of the frontend:
-
-```powershell
+# 2. Frontend (in a second terminal)
 cd frontend
-npm run build
+npm install
+npm start                   # http://localhost:3000
 ```
 
-## 📁 Project Structure
+### Configuration
+
+| Variable | File | Default | Purpose |
+|----------|------|---------|---------|
+| `DB_HOST` / `DB_USER` / `DB_PASSWORD` | `backend/.env` | none | MySQL connection |
+| `DB_NAME` | `backend/.env` | `beerthusiasts` | Must match the schema in `dbDump.sql` |
+| `API_PORT` | `backend/.env` | `5001` | API port |
+| `CORS_ORIGIN` | `backend/.env` | `http://localhost:3000` | Comma-separated origins allowed to call the API |
+| `REACT_APP_API_BASE` | `frontend/.env` | `http://localhost:5001` | API URL used by the frontend |
+
+`node reset_db.js` resets the database to the sample data at any time. It is **destructive**: it drops and recreates the schema.
+
+## Project structure
 
 ```
-beerdb/
-├── backend/               # Express API server
+BeerThusiasts/
+├── backend/
 │   ├── src/
-│   │   ├── controllers/   # Route controllers
-│   │   ├── routes/        # API routes
-│   │   ├── app.js         # Express app configuration
-│   │   └── db.js          # Database connection
-│   ├── public/images/     # Uploaded beer images
-│   ├── reset_db.js        # Database initialization script
-│   ├── dummy_data.sql     # Sample data
-│   └── clean_tables.sql   # Table truncation script
-├── frontend/              # React application
-│   ├── src/
-│   │   ├── components/    # Reusable React components
-│   │   ├── pages/         # Page components
-│   │   ├── api/           # API client functions
-│   │   └── context/       # React Context providers
-│   └── public/            # Static assets
-├── dbDump.sql             # Complete database schema
-└── setup-and-launch.ps1   # Automated setup script
+│   │   ├── app.js            # Express setup: CORS, JSON limits, routes, static images
+│   │   ├── db.js             # mysql2 connection pool
+│   │   ├── routes/           # URL → controller mapping (+ upload validation in admin.js)
+│   │   └── controllers/      # Query and business logic per resource
+│   ├── reset_db.js           # Rebuilds the schema and loads dummy_data.sql
+│   ├── dummy_data.sql        # Sample data
+│   └── .env.example          # Config template (the real .env is gitignored)
+├── frontend/
+│   └── src/
+│       ├── pages/            # Route-level screens (catalog, cart, admin, service, ...)
+│       ├── components/       # BeerCard, Filters, AddBeerForm, UploadImageForm, towerGame/
+│       ├── context/          # CartContext
+│       └── api/beer.js       # All API calls in one place
+├── dbDump.sql                # Full schema: tables, constraints, views
+├── setup-and-launch.ps1
+└── SECURITY.md               # Security self-review
 ```
 
-## 🎮 Features
+## Known limitations
 
-- **Beer Catalog**: Browse and search through a collection of craft beers
-- **Reviews & Ratings**: Add reviews and ratings for beers
-- **Shopping Cart**: Add beers to cart and place orders
-- **Admin Panel**: Manage beers, brands, orders, pubs, employees and suppliers
-- **Image Upload**: Upload and manage beer images
-- **Tower Game**: Fun mini-game in the Playroom section
+- **No authentication yet.** The role is picked on the home page and stored client-side, and the API does not check it. This is the top item in [SECURITY.md](SECURITY.md#open-issues), along with the planned JWT + bcrypt design.
+- No automated test suite yet.
 
-## 🗄️ Database
+## Credits
 
-The application uses MySQL with the following main tables:
-- `beers` - Beer products and details
-- `brands` - Beer brands/breweries
-- `pubs` - Pub/supplier information
-- `orders` - Customer and supplier orders
-- `reviews` - Beer reviews and ratings
+- The review form (rating input, comment box, submit flow) was adapted from open-source examples whose license is not stated: [RichardFoil/milestone3](https://github.com/RichardFoil/milestone3/blob/f4a322acc612727866a59de59454beda3334a86c/frontend/src/CommentRatingForm.js), [rishavgn/tensorassg](https://github.com/rishavgn/tensorassg/blob/9c3f02aa179c3a4f9a348f8a97d8035fb211959d/client/src/screens/FeedbackForm.jsx), [mcshanebrendan/my-app](https://github.com/mcshanebrendan/my-app/blob/75e763305873a195b24e5c8611c20d4008d7ae29/src/components/reviews.js).
+- I used AI coding assistants during development for scaffolding, debugging and documentation.
 
-The database is automatically initialized with sample data when running `reset_db.js` or the setup script.
+## License
 
-## 🧪 Testing
-
-Run frontend tests:
-
-```powershell
-cd frontend
-npm test
-```
-
-## 📝 Code Citations
-
-This project includes code snippets and inspiration from the following sources:
-
-### Review Form Components
-
-**License: Unknown**
-- https://github.com/RichardFoil/milestone3/blob/f4a322acc612727866a59de59454beda3334a86c/frontend/src/CommentRatingForm.js
-- https://github.com/rishavgn/tensorassg/blob/9c3f02aa179c3a4f9a348f8a97d8035fb211959d/client/src/screens/FeedbackForm.jsx
-- https://github.com/mcshanebrendan/my-app/blob/75e763305873a195b24e5c8611c20d4008d7ae29/src/components/reviews.js
-
-The review form implementation (rating input, comment textarea, and form submission) was adapted from these open-source examples.
-
-## 🤖 Development Note
-
-This application was built with the assistance of AI coding agents, which helped with:
-- Code generation and scaffolding
-- Debugging and troubleshooting
-- Documentation and README creation
-- Best practices and optimization suggestions
-
-## 📄 License
-
-This project is for educational and demonstration purposes.
-
----
-
-**Enjoy exploring craft beers! 🍻**
+Educational and portfolio use.
