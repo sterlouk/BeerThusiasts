@@ -1,7 +1,7 @@
-# BeerDB Setup and Launch Script
+# BeerThusiasts Setup and Launch Script
 # This script installs dependencies, sets up the database, and launches the application
 
-Write-Host "BeerDB Setup and Launch Script" -ForegroundColor Cyan
+Write-Host "BeerThusiasts Setup and Launch Script" -ForegroundColor Cyan
 Write-Host "=================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -43,6 +43,13 @@ if (Test-Path node_modules) {
     }
 }
 Write-Host "Backend dependencies installed" -ForegroundColor Green
+
+# Make sure database credentials are configured (backend/.env is never committed)
+if (-not (Test-Path .env)) {
+    Copy-Item .env.example .env
+    Write-Host "Created backend/.env from .env.example - set DB_PASSWORD in it, then re-run this script." -ForegroundColor Yellow
+    exit 1
+}
 
 # Setup database
 Write-Host "Setting up database..." -ForegroundColor Yellow

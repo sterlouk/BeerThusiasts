@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 async function resetDatabase() {
   const sqlDumpPath = path.join(process.cwd(), '..', 'dbDump.sql');
@@ -9,9 +12,9 @@ async function resetDatabase() {
   const dummyContent = fs.readFileSync(dummyDataPath, 'utf-8');
 
   const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'ster', // Update if you have a password
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
   });
 
   try {
